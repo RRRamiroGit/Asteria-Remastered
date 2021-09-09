@@ -1,0 +1,13 @@
+name: AsteriaSMP
+author: RRRamiro
+version: 1.0
+main: net.randompvp.asteria.Main
+api-version: 1.17
+
+commands:
+  r:
+    description: Reply to someone
+  cancelrestart:
+    description: Cancel Restart
+  shrug:
+    description: Shrugs for you
