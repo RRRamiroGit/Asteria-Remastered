@@ -600,7 +600,7 @@ public class Asteria extends JavaPlugin {
 						a.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 60, 0));
 					if (hasAdvancement(a, "story/enchant_item"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 300, 0));
-				} else if (a.getUniqueId().equals(jose) && hasAdvancement(a, "story/enter_the_end")) {
+				} else if (a.getUniqueId().equals(jose) && endAdvancements.contains(a.getUniqueId())) {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 60, 1));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 1));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60, 1));
