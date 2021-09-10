@@ -569,15 +569,14 @@ public class Asteria extends JavaPlugin {
 						for (Player aa : Bukkit.getOnlinePlayers()) {
 							if (aa.getUniqueId().equals(a.getUniqueId()))
 								continue;
-							double distance = aa.getLocation().distance(a.getLocation());
 							boolean contains = alertPlayers.contains(aa.getUniqueId());
 							if (!aa.getWorld().getName().equals(a.getWorld().getName()) && contains) {
 								alertPlayers.remove(aa.getUniqueId());
 								a.sendMessage(ChatColor.RED + aa.getName() + " isn't within your premise anymore!");
-							} else if (aa.getWorld().getName().equals(a.getWorld().getName()) && distance < 30 && !contains) {
+							} else if (aa.getWorld().getName().equals(a.getWorld().getName()) && aa.getLocation().distance(a.getLocation()) < 30 && !contains) {
 								alertPlayers.add(aa.getUniqueId());
 								a.sendMessage(ChatColor.GREEN + aa.getName() + " is within your premise!");
-							} else if (aa.getWorld().getName().equals(a.getWorld().getName()) && distance >= 30 && contains) {
+							} else if (aa.getWorld().getName().equals(a.getWorld().getName()) && aa.getLocation().distance(a.getLocation()) >= 30 && contains) {
 								alertPlayers.remove(aa.getUniqueId());
 								a.sendMessage(ChatColor.RED + aa.getName() + " isn't within your premise anymore!");
 							}
