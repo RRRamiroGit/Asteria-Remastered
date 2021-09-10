@@ -128,7 +128,7 @@ public class InventoryListeners implements Listener {
 								return;
 							}
 						}
-						Block b = Bukkit.getWorld("nether").getBlockAt(x, 70, z);
+						Block b = Bukkit.getWorld("world_nether").getBlockAt(x, 70, z);
 						Location l = b.getLocation();
 						l.setX(l.getX() + 0.5);
 						l.setZ(l.getZ() + 0.5);

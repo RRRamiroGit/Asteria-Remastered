@@ -301,7 +301,7 @@ public class Asteria extends JavaPlugin {
 		writeToFileNew(new File(getDataFolder(), "reversalDamage"), reversalDamage.toString());
 		writeToFileNew(new File(getDataFolder(), "fortuneChance"), String.valueOf(cooldownRagnarok));
 		writeToFileNew(new File(getDataFolder(), "ragnarok"), String.valueOf(cooldownRagnarok));
-		String endAdvancementsString = "";
+		String endAdvancementsString = ",";
 		for (UUID u : endAdvancements)
 			endAdvancementsString = endAdvancementsString + u.toString() + ",";
 		writeToFileNew(new File(getDataFolder(), "endAdvancements"), endAdvancementsString);
