@@ -252,7 +252,7 @@ public class Asteria extends JavaPlugin {
 	public static boolean isHostileConvergenceActive = false;
 	public static ArrayList<HostileConvergencePlayer> hostileConvergencePlayers = new ArrayList<HostileConvergencePlayer>();
 	public static double hanyPowerMultiplier = 1;
-	public static int chanceForFortune = 5;
+	public static int chanceForFortune = readFortune();
 	public static int fortuneTask = 0;
 	public static int fortuneEndTask = 0;
 	public static HashSet<UUID> endAdvancements = readArray("endAdvancements");
@@ -1187,10 +1187,10 @@ public class Asteria extends JavaPlugin {
 		return 0L;
 	}
 
-	int readFortune() {
-		if (!getDataFolder().exists())
-			getDataFolder().mkdir();
-		File f = new File(getDataFolder(), "fortuneChance");
+	static int readFortune() {
+		if (!dataFolder.exists())
+			dataFolder.mkdir();
+		File f = new File(dataFolder, "fortuneChance");
 		try {
 			if (f.createNewFile())
 				return 5;
