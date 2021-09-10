@@ -233,6 +233,7 @@ public class EntityListeners implements Listener {
 						Asteria.reversalDamageId.put(entity.getUniqueId(), Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 							entity.damage(damage);
 							entity.sendMessage(ChatColor.RED + "You have been hit with " + ChatColor.GOLD + String.valueOf(new DecimalFormat("#.##").format(damage)) + ChatColor.RED + " damage!");
+							Asteria.reversalDamageId.remove(entity.getUniqueId());
 						}, 9));
 						Asteria.reversalDamage = 0D;
 					}
