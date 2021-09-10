@@ -28,6 +28,7 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.World.Environment;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -52,7 +53,6 @@ import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.entity.WitherSkull;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -64,12 +64,14 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.randompvp.asteria.listeners.BlockListeners;
 import net.randompvp.asteria.listeners.EntityListeners;
+import net.randompvp.asteria.listeners.InventoryListeners;
 import net.randompvp.asteria.listeners.PlayerListeners;
 import net.randompvp.asteria.powers.HostileConvergencePlayer;
 import net.randompvp.asteria.utils.PowerUtils;
 
 public class Asteria extends JavaPlugin {
 	Random r = new Random();
+	static File dataFolder = new File("plugins", "AsteriaSMP");
 	public static UUID hany = UUID.fromString("22f40a79-3ed4-4c90-b922-105ce4f8d473");
 	public static UUID ed = UUID.fromString("700fd2d3-3bb6-47a8-b9dd-aeefc47ee159");
 	public static UUID saby = UUID.fromString("63e461d7-9450-4148-9a21-ad205d48015e");
@@ -253,14 +255,13 @@ public class Asteria extends JavaPlugin {
 	public static int chanceForFortune = 5;
 	public static int fortuneTask = 0;
 	public static int fortuneEndTask = 0;
-	static File dataFolder;
-
-	PluginManager pm = getServer().getPluginManager();
+	public static HashSet<UUID> endAdvancements = readArray("endAdvancements");
 
 	@Override
 	public void onEnable() {
-		dataFolder = Asteria.getPlugin(Asteria.class).getDataFolder();
+		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(new PlayerListeners(Asteria.getPlugin(this.getClass())), this);
+		pm.registerEvents(new InventoryListeners(Asteria.getPlugin(this.getClass())), this);
 		pm.registerEvents(new EntityListeners(Asteria.getPlugin(this.getClass())), this);
 		pm.registerEvents(new BlockListeners(Asteria.getPlugin(this.getClass())), this);
 		scheduleRestart();
@@ -276,6 +277,15 @@ public class Asteria extends JavaPlugin {
 				ex.printStackTrace();
 			}
 		}
+		WorldCreator dm = new WorldCreator("dimensional_room");
+		dm.environment(Environment.THE_END);
+		Bukkit.createWorld(dm);
+		WorldCreator tenth = new WorldCreator("10thdimension");
+		tenth.environment(Environment.THE_END);
+		Bukkit.createWorld(tenth);
+		WorldCreator twelfth = new WorldCreator("12thdimension");
+		twelfth.environment(Environment.THE_END);
+		Bukkit.createWorld(twelfth);
 	}
 
 	@Override
@@ -288,16 +298,13 @@ public class Asteria extends JavaPlugin {
 			for (HashMap.Entry<Location, BlockData> blitt : blit.getValue().entrySet())
 				blitt.getKey().getBlock().setBlockData(blitt.getValue());
 		}
-		try (FileWriter filewriter = new FileWriter(new File(getDataFolder(), "reversalDamage"))) {
-			filewriter.write(reversalDamage.toString());
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		try (FileWriter filewriter = new FileWriter(new File(getDataFolder(), "fortuneChance"))) {
-			filewriter.write(String.valueOf(chanceForFortune));
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
+		writeToFileNew(new File(getDataFolder(), "reversalDamage"), reversalDamage.toString());
+		writeToFileNew(new File(getDataFolder(), "fortuneChance"), String.valueOf(cooldownRagnarok));
+		writeToFileNew(new File(getDataFolder(), "ragnarok"), String.valueOf(cooldownRagnarok));
+		String endAdvancementsString = "";
+		for (UUID u : endAdvancements)
+			endAdvancementsString = endAdvancementsString + u.toString() + ",";
+		writeToFileNew(new File(getDataFolder(), "endAdvancements"), endAdvancementsString);
 		for (Entry<UUID, Integer> iv : invis.entrySet()) {
 			Player p = Bukkit.getPlayer(iv.getKey());
 			p.removePotionEffect(PotionEffectType.DAMAGE_RESISTANCE);
@@ -330,14 +337,12 @@ public class Asteria extends JavaPlugin {
 			}
 			boolean foundItem = false;
 			for (ItemStack is : p.getInventory().getContents()) {
-				if (is != null && is.getItemMeta().getDisplayName() != null
-						&& is.getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
+				if (is != null && is.getItemMeta().getDisplayName() != null && is.getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
 					p.getInventory().remove(is);
 					foundItem = true;
 				}
 			}
-			if (!foundItem && p.getItemOnCursor() != null && p.getItemOnCursor().getItemMeta().getDisplayName() != null
-					&& p.getItemOnCursor().getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
+			if (!foundItem && p.getItemOnCursor() != null && p.getItemOnCursor().getItemMeta().getDisplayName() != null && p.getItemOnCursor().getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
 				p.getInventory().remove(p.getItemOnCursor());
 				foundItem = true;
 			}
@@ -370,71 +375,20 @@ public class Asteria extends JavaPlugin {
 
 	void scheduleRestartCountdown() {
 		isRestarting = true;
-		Bukkit.getLogger().info("Restarting in 10 minutes");
-		for (Player a : Bukkit.getOnlinePlayers())
-			a.sendMessage("§bServer restarting in 10 minutes.");
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 5 minutes.");
-			}
-		}, 6000L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				Bukkit.getLogger().info("Restarting in 1 minute");
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 1 minute.");
-			}
-		}, 10800L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 30 seconds.");
-			}
-		}, 11400L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 15 seconds.");
-			}
-		}, 11700L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				Bukkit.getLogger().info("Restarting in 10 seconds");
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 10 seconds.");
-			}
-		}, 11800L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 5 seconds.");
-			}
-		}, 11900L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 3 seconds.");
-			}
-		}, 11940L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 2 seconds.");
-			}
-		}, 11960L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.sendMessage("§bServer restarting in 1 second.");
-			}
-		}, 11980L));
-		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), new Runnable() {
-			public void run() {
-				for (Player a : Bukkit.getOnlinePlayers())
-					a.kickPlayer("Server is restarting, rejoin soon!");
-				Bukkit.getServer().shutdown();
-			}
+		Bukkit.broadcastMessage("§bServer restarting in 10 minutes.");
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 5 minutes."), 6000L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 1 minute."), 10800L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 30 seconds."), 11400L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 15 seconds."), 11700L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 10 seconds."), 11800L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 5 seconds."), 11900L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 3 seconds."), 11940L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 2 seconds."), 11960L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> Bukkit.broadcastMessage("§bServer restarting in 1 second."), 11980L));
+		restartTasks.add(Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+			for (Player a : Bukkit.getOnlinePlayers())
+				a.kickPlayer("Server is restarting, rejoin soon!");
+			Bukkit.getServer().shutdown();
 		}, 12000L));
 	}
 
@@ -469,11 +423,7 @@ public class Asteria extends JavaPlugin {
 					Bukkit.getScheduler().cancelTask(it1.next());
 				}
 				restartTasks.clear();
-				Bukkit.getScheduler().scheduleSyncDelayedTask((Plugin) Asteria.getPlugin(Asteria.class), new Runnable() {
-					public void run() {
-						scheduleRestartCountdown();
-					}
-				}, 12000L);
+				Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> scheduleRestartCountdown(), 12000L);
 			}
 		}
 		if (cmd.getName().equalsIgnoreCase("shrug")) {
@@ -558,7 +508,7 @@ public class Asteria extends JavaPlugin {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 10, 1));
 				else if (a.getUniqueId().equals(jonathan) && wrathId != 0) {
 					a.getWorld().spawnParticle(Particle.WHITE_ASH, a.getLocation(), 20, 0.2, 0, 0.2, 0.9);
-				} else if (a.getUniqueId().equals(ed) && hasAdvancement(a, "minecraft:story/mine_diamond")) {
+				} else if (a.getUniqueId().equals(ed) && hasAdvancement(a, "story/mine_diamond")) {
 					String bold = "";
 					if (reversalDamage / 75 > 100)
 						bold = "§l";
@@ -578,11 +528,11 @@ public class Asteria extends JavaPlugin {
 						}
 					}
 				} else if (a.getUniqueId().equals(jose)) {
-					double maxhealth = hasAdvancement(a, "minecraft:story/enter_the_end") ? 28 : 20;
+					double maxhealth = hasAdvancement(a, "story/enter_the_end") ? 28 : 20;
 					if ((a.getLocation().getBlock().getType().equals(Material.WATER) || a.getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER)) || (!a.getWorld().isClearWeather() && !PowerUtils.isUnderSomething(a))) {
-						if (hasAdvancement(a, "minecraft:nether/brew_potion"))
+						if (hasAdvancement(a, "nether/brew_potion"))
 							a.addPotionEffect(new PotionEffect(PotionEffectType.DOLPHINS_GRACE, 40, 0));
-						if (hasAdvancement(a, "minecraft:story/obtain_armor")) {
+						if (hasAdvancement(a, "story/obtain_armor")) {
 							if (a.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() != maxhealth + 4)
 								a.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxhealth + 4);
 							a.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 1));
@@ -609,13 +559,13 @@ public class Asteria extends JavaPlugin {
 						a.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, 60, 0, false, false));
 				} else if (a.getUniqueId().equals(ramiro)) {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.LUCK, 60, 0));
-					if (hasAdvancement(a, "minecraft:story/enter_the_nether"))
+					if (hasAdvancement(a, "story/enter_the_nether"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60, 0));
-					if (hasAdvancement(a, "minecraft:story/shiny_gear"))
+					if (hasAdvancement(a, "story/shiny_gear"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 60, 0));
-					if (hasAdvancement(a, "minecraft:story/enter_the_end"))
+					if (hasAdvancement(a, "story/enter_the_end"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 0));
-					if (hasAdvancement(a, "minecraft:nether/explore_nether")) {
+					if (hasAdvancement(a, "nether/explore_nether")) {
 						for (Player aa : Bukkit.getOnlinePlayers()) {
 							if (aa.getUniqueId().equals(a.getUniqueId()))
 								continue;
@@ -636,22 +586,22 @@ public class Asteria extends JavaPlugin {
 				} else if (a.getUniqueId().equals(jonathan)) {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60, 1));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 60, 0));
-					if (hasAdvancement(a, "minecraft:story/shiny_gear"))
+					if (hasAdvancement(a, "story/shiny_gear"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 60, 1));
-				} else if (a.getUniqueId().equals(eli) && hasAdvancement(a, "minecraft:story/shiny_gear")) {
+				} else if (a.getUniqueId().equals(eli) && hasAdvancement(a, "story/shiny_gear")) {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 60, 1));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 1));
 				} else if (a.getUniqueId().equals(oz)) {
-					boolean hasSniper = hasAdvancement(a, "minecraft:story/shiny_gear");
+					boolean hasSniper = hasAdvancement(a, "story/shiny_gear");
 					if (hasSniper)
 						a.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 0));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60, hasSniper ? 1 : 0));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 60, hasSniper ? 1 : 0));
-					if (hasAdvancement(a, "minecraft:nether/return_to_sender"))
+					if (hasAdvancement(a, "nether/return_to_sender"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 60, 0));
-					if (hasAdvancement(a, "minecraft:story/enchant_item"))
+					if (hasAdvancement(a, "story/enchant_item"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 300, 0));
-				} else if (a.getUniqueId().equals(jose) && hasAdvancement(a, "minecraft:story/enter_the_end")) {
+				} else if (a.getUniqueId().equals(jose) && hasAdvancement(a, "story/enter_the_end")) {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 60, 1));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 60, 1));
 					a.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 60, 1));
@@ -892,12 +842,12 @@ public class Asteria extends JavaPlugin {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 90, 1));
 				else if (a.getUniqueId().equals(saby))
 					a.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION, 90, 0, false, false));
-				else if (a.getUniqueId().equals(ramiro) && hasAdvancement(a, "minecraft:nether/explore_nether")) {
+				else if (a.getUniqueId().equals(ramiro) && hasAdvancement(a, "nether/explore_nether")) {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 90, 1));
 				} else if (a.getUniqueId().equals(jose)) {
-					if (hasAdvancement(a, "minecraft:story/enter_the_end"))
+					if (hasAdvancement(a, "story/enter_the_end"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.CONDUIT_POWER, 90, 0));
-					else if (hasAdvancement(a, "minecraft:nether/brew_potion"))
+					else if (hasAdvancement(a, "nether/brew_potion"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.WATER_BREATHING, 90, 0));
 					if (a.getLocation().getBlock().getType().equals(Material.WATER) || a.getLocation().getBlock().getRelative(BlockFace.UP).getType().equals(Material.WATER))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 90, 1));
@@ -910,7 +860,7 @@ public class Asteria extends JavaPlugin {
 			for (Player a : Bukkit.getOnlinePlayers()) {
 				if (a.getUniqueId().equals(jonathan)) {
 					a.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 2));
-					if (hasAdvancement(a, "minecraft:story/shiny_gear"))
+					if (hasAdvancement(a, "story/shiny_gear"))
 						a.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 200, 3));
 				}
 			}
@@ -925,11 +875,19 @@ public class Asteria extends JavaPlugin {
 		}
 	}
 
+	void writeToFileNew(File f, String s) {
+		try (FileWriter filewriter = new FileWriter(f)) {
+			filewriter.write(s);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
 	public static void addPowers(Player p) {
 		UUID u = p.getUniqueId();
 		if (u.equals(hany)) {
 			ItemStack a;
-			if (hasAdvancement(p, "minecraft:nether/summon_wither")) {
+			if (hasAdvancement(p, "nether/summon_wither")) {
 				a = itemWithName(Material.NETHERITE_SWORD, "§bStygius");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 3, true);
@@ -937,7 +895,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.SWEEPING_EDGE, 3, true);
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
 				a.setItemMeta(ab);
-			} else if (hasAdvancement(p, "minecraft:nether/brew_potion")) {
+			} else if (hasAdvancement(p, "nether/brew_potion")) {
 				a = itemWithName(Material.NETHERITE_SWORD, "§bStygius");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 2, true);
@@ -945,7 +903,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.SWEEPING_EDGE, 3, true);
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
 				a.setItemMeta(ab);
-			} else if (hasAdvancement(p, "minecraft:nether/obtain_blaze_rod")) {
+			} else if (hasAdvancement(p, "nether/obtain_blaze_rod")) {
 				a = itemWithName(Material.DIAMOND_SWORD, "§bStygius");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 2, true);
@@ -953,7 +911,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.SWEEPING_EDGE, 2, true);
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
 				a.setItemMeta(ab);
-			} else if (hasAdvancement(p, "minecraft:nether/get_wither_skull")) {
+			} else if (hasAdvancement(p, "nether/get_wither_skull")) {
 				a = itemWithName(Material.IRON_SWORD, "§bStygius");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 1, true);
@@ -961,14 +919,14 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.SWEEPING_EDGE, 2, true);
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 3, true);
 				a.setItemMeta(ab);
-			} else if (hasAdvancement(p, "minecraft:nether/find_fortress")) {
+			} else if (hasAdvancement(p, "nether/find_fortress")) {
 				a = itemWithName(Material.IRON_SWORD, "§bStygius");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.FIRE_ASPECT, 1, true);
 				ab.addEnchant(Enchantment.SWEEPING_EDGE, 1, true);
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 2, true);
 				a.setItemMeta(ab);
-			} else if (hasAdvancement(p, "minecraft:story/enter_the_nether")) {
+			} else if (hasAdvancement(p, "story/enter_the_nether")) {
 				a = itemWithName(Material.STONE_SWORD, "§bStygius");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.FIRE_ASPECT, 1, true);
@@ -992,7 +950,7 @@ public class Asteria extends JavaPlugin {
 			if (hasAdvancement(p, "nether/summon_wither"))
 				p.getInventory().addItem(itemWithName(Material.NETHER_STAR, "§6Royal Guard"));
 		} else if (u.equals(saby)) {
-			if (hasAdvancement(p, "minecraft:end/dragon_breath")) {
+			if (hasAdvancement(p, "end/dragon_breath")) {
 				ItemStack a = itemWithName(Material.NETHERITE_SWORD, "§6Caliburn");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 3, true);
@@ -1001,7 +959,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
 				a.setItemMeta(ab);
 				p.getInventory().addItem(a);
-			} else if (hasAdvancement(p, "minecraft:story/enchant_item")) {
+			} else if (hasAdvancement(p, "story/enchant_item")) {
 				ItemStack a = itemWithName(Material.NETHERITE_SWORD, "§6Caliburn");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 2, true);
@@ -1010,7 +968,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
 				a.setItemMeta(ab);
 				p.getInventory().addItem(a);
-			} else if (hasAdvancement(p, "minecraft:husbandry/make_a_sign_glow")) {
+			} else if (hasAdvancement(p, "husbandry/make_a_sign_glow")) {
 				ItemStack a = itemWithName(Material.DIAMOND_SWORD, "§6Caliburn");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 2, true);
@@ -1019,7 +977,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
 				a.setItemMeta(ab);
 				p.getInventory().addItem(a);
-			} else if (hasAdvancement(p, "minecraft:adventure/shoot_arrow")) {
+			} else if (hasAdvancement(p, "adventure/shoot_arrow")) {
 				ItemStack a = itemWithName(Material.IRON_SWORD, "§6Caliburn");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.LOOT_BONUS_MOBS, 1, true);
@@ -1028,7 +986,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 3, true);
 				a.setItemMeta(ab);
 				p.getInventory().addItem(a);
-			} else if (hasAdvancement(p, "minecraft:adventure/voluntary_exile")) {
+			} else if (hasAdvancement(p, "adventure/voluntary_exile")) {
 				ItemStack a = itemWithName(Material.IRON_SWORD, "§6Caliburn");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.FIRE_ASPECT, 1, true);
@@ -1036,7 +994,7 @@ public class Asteria extends JavaPlugin {
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 2, true);
 				a.setItemMeta(ab);
 				p.getInventory().addItem(a);
-			} else if (hasAdvancement(p, "minecraft:story/lava_bucket")) {
+			} else if (hasAdvancement(p, "story/lava_bucket")) {
 				ItemStack a = itemWithName(Material.STONE_SWORD, "§6Caliburn");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.FIRE_ASPECT, 1, true);
@@ -1051,54 +1009,54 @@ public class Asteria extends JavaPlugin {
 				p.getInventory().addItem(a);
 			}
 			p.getInventory().addItem(itemWithName(Material.BLUE_ICE, "§bSnowstorm"));
-			if (hasAdvancement(p, "minecraft:story/lava_bucket")) {
+			if (hasAdvancement(p, "story/lava_bucket")) {
 				p.getInventory().addItem(itemWithName(Material.BLAZE_ROD, "§6Hellstorm"));
 				p.getInventory().addItem(itemWithName(Material.GLOWSTONE_DUST, "§bFire Breath"));
 			}
-			if (hasAdvancement(p, "minecraft:adventure/voluntary_exile")) {
+			if (hasAdvancement(p, "adventure/voluntary_exile")) {
 				p.getInventory().addItem(itemWithName(Material.TOTEM_OF_UNDYING, "§6Spectral Shift"));
 				p.getInventory().addItem(itemWithName(Material.GOLD_NUGGET, "§bParalysis"));
 			}
-			if (hasAdvancement(p, "minecraft:adventure/shoot_arrow"))
+			if (hasAdvancement(p, "adventure/shoot_arrow"))
 				p.getInventory().addItem(itemWithName(Material.ARROW, "§6Conjuring Shot"));
-			if (hasAdvancement(p, "minecraft:husbandry/make_a_sign_glow"))
+			if (hasAdvancement(p, "husbandry/make_a_sign_glow"))
 				p.getInventory().addItem(itemWithName(Material.GLOWSTONE, "§6Divine Light"));
-			if (hasAdvancement(p, "minecraft:story/enchant_item"))
+			if (hasAdvancement(p, "story/enchant_item"))
 				p.getInventory().addItem(itemWithName(Material.CLOCK, "§6Time Manipulation"));
-			if (hasAdvancement(p, "minecraft:end/dragon_breath"))
+			if (hasAdvancement(p, "end/dragon_breath"))
 				p.getInventory().addItem(itemWithName(Material.DRAGON_BREATH, "§6Sorcerer's State"));
 		} else if (u.equals(jonathan)) {
 			p.getInventory().addItem(itemWithName(Material.YELLOW_DYE, "§6Shooting Star"));
-			if (hasAdvancement(p, "minecraft:story/lava_bucket"))
+			if (hasAdvancement(p, "story/lava_bucket"))
 				p.getInventory().addItem(itemWithName(Material.DIAMOND, "§6Distortion"));
-			if (hasAdvancement(p, "minecraft:nether/obtain_blaze_rod"))
+			if (hasAdvancement(p, "nether/obtain_blaze_rod"))
 				p.getInventory().addItem(itemWithName(Material.BLAZE_POWDER, "§6Eruption"));
-			if (hasAdvancement(p, "minecraft:story/enter_the_end"))
+			if (endAdvancements.contains(p.getUniqueId()))
 				p.getInventory().addItem(itemWithName(Material.TNT, "§6Supernova"));
-			if (hasAdvancement(p, "minecraft:end/elytra"))
+			if (hasAdvancement(p, "end/elytra"))
 				p.getInventory().addItem(itemWithName(Material.NETHER_STAR, "§6Star Shield"));
-			if (hasAdvancement(p, "minecraft:end/respawn_dragon"))
+			if (hasAdvancement(p, "end/respawn_dragon"))
 				p.getInventory().addItem(itemWithName(Material.END_CRYSTAL, "§6Wrath of Asteria"));
 		} else if (u.equals(ramiro)) {
-			if (hasAdvancement(p, "minecraft:story/mine_diamond"))
+			if (hasAdvancement(p, "story/mine_diamond"))
 				p.getInventory().addItem(itemWithName(Material.RABBIT_FOOT, "§6Alert / Double Jump"));
-			if (hasAdvancement(p, "minecraft:story/enter_the_nether"))
+			if (hasAdvancement(p, "story/enter_the_nether"))
 				p.getInventory().addItem(itemWithName(Material.LIME_DYE, "§bStomp"));
 		} else if (u.equals(ed)) {
 			p.getInventory().addItem(itemWithName(Material.GRAY_GLAZED_TERRACOTTA, "§bDimensional Shift"));
-			if (hasAdvancement(p, "minecraft:adventure/kill_a_mob"))
+			if (hasAdvancement(p, "adventure/kill_a_mob"))
 				p.getInventory().addItem(itemWithName(Material.REDSTONE_BLOCK, "§bHostile Convergence"));
-			if (hasAdvancement(p, "minecraft:story/enter_the_nether"))
+			if (hasAdvancement(p, "story/enter_the_nether"))
 				p.getInventory().addItem(itemWithName(Material.RED_STAINED_GLASS_PANE, "§6Dimension Jump"));
-			if (hasAdvancement(p, "minecraft:story/mine_diamond"))
+			if (hasAdvancement(p, "story/mine_diamond"))
 				p.getInventory().addItem(itemWithName(Material.LIGHT_BLUE_STAINED_GLASS_PANE, "§6Spatial Manipulation"));
-			if (hasAdvancement(p, "minecraft:story/shiny_gear")) {
+			if (hasAdvancement(p, "story/shiny_gear")) {
 				p.getInventory().addItem(itemWithName(Material.BLUE_GLAZED_TERRACOTTA, "§bArea Counter"));
 				p.getInventory().addItem(itemWithName(Material.WHITE_STAINED_GLASS_PANE, "§6Dimensional Rooms"));
 			}
-			if (hasAdvancement(p, "minecraft:end/kill_dragon"))
+			if (hasAdvancement(p, "end/kill_dragon"))
 				p.getInventory().addItem(itemWithName(Material.BLACK_STAINED_GLASS_PANE, "§610th Dimensional Physiology"));
-			if (hasAdvancement(p, "minecraft:end/find_end_city")) {
+			if (hasAdvancement(p, "end/find_end_city")) {
 				p.getInventory().addItem(itemWithName(Material.PURPLE_STAINED_GLASS_PANE, "§6Rift"));
 				p.getInventory().addItem(itemWithName(Material.YELLOW_STAINED_GLASS_PANE, "§6Energy Convergence"));
 			}
@@ -1106,43 +1064,43 @@ public class Asteria extends JavaPlugin {
 		} else if (u.equals(jose)) {
 			ItemStack a = itemWithName(Material.TRIDENT, "§6Neptune");
 			ItemMeta ab = a.getItemMeta();
-			ab.addEnchant(Enchantment.IMPALING, hasAdvancement(p, "minecraft:nether/brew_potion") ? 5 : hasAdvancement(p, "minecraft:adventure/very_very_frightening") ? 4 : hasAdvancement(p, "minecraft:husbandry/kill_axolotl_target") ? 3 : hasAdvancement(p, "minecraft:story/obtain_armor") ? 2 : 1, true);
-			if (hasAdvancement(p, "minecraft:husbandry/kill_axolotl_target"))
+			ab.addEnchant(Enchantment.IMPALING, hasAdvancement(p, "nether/brew_potion") ? 5 : hasAdvancement(p, "adventure/very_very_frightening") ? 4 : hasAdvancement(p, "husbandry/kill_axolotl_target") ? 3 : hasAdvancement(p, "story/obtain_armor") ? 2 : 1, true);
+			if (hasAdvancement(p, "husbandry/kill_axolotl_target"))
 				ab.addEnchant(Enchantment.CHANNELING, 1, true);
 			a.setItemMeta(ab);
 			p.getInventory().addItem(a);
 			p.getInventory().addItem(itemWithName(Material.GOLD_INGOT, "§6Raging Storm"));
-			if (hasAdvancement(p, "minecraft:adventure/kill_a_mob"))
+			if (hasAdvancement(p, "adventure/kill_a_mob"))
 				p.getInventory().addItem(itemWithName(Material.NAUTILUS_SHELL, "§bCalling Conch"));
-			if (hasAdvancement(p, "minecraft:story/obtain_armor"))
+			if (hasAdvancement(p, "story/obtain_armor"))
 				p.getInventory().addItem(itemWithName(Material.HEART_OF_THE_SEA, "§bClimate Change"));
-			if (hasAdvancement(p, "minecraft:husbandry/kill_axolotl_target"))
+			if (hasAdvancement(p, "husbandry/kill_axolotl_target"))
 				p.getInventory().addItem(itemWithName(Material.DIAMOND, "§bAqua Blast"));
-			if (hasAdvancement(p, "minecraft:story/enter_the_end"))
+			if (endAdvancements.contains(p.getUniqueId()))
 				p.getInventory().addItem(itemWithName(Material.CONDUIT, "§bWrath of the Sea"));
 		} else if (u.equals(brent)) {
 			p.getInventory().addItem(itemWithName(Material.COAL, "§6Screech"));
-			if (hasAdvancement(p, "minecraft:adventure/kill_a_mob"))
+			if (hasAdvancement(p, "adventure/kill_a_mob"))
 				p.getInventory().addItem(itemWithName(Material.NETHERITE_INGOT, "§6Dark Shift"));
-			if (hasAdvancement(p, "minecraft:story/deflect_arrow"))
+			if (hasAdvancement(p, "story/deflect_arrow"))
 				p.getInventory().addItem(itemWithName(Material.REDSTONE, "§6Blood Bite"));
-			if (hasAdvancement(p, "minecraft:nether/return_to_sender"))
+			if (hasAdvancement(p, "nether/return_to_sender"))
 				p.getInventory().addItem(itemWithName(Material.GHAST_TEAR, "§6Return"));
-			if (hasAdvancement(p, "minecraft:story/follow_ender_eye"))
+			if (hasAdvancement(p, "story/follow_ender_eye"))
 				p.getInventory().addItem(itemWithName(Material.SLIME_BALL, "§6Poisonous Breath"));
-			if (hasAdvancement(p, "minecraft:end/dragon_egg"))
+			if (hasAdvancement(p, "end/dragon_egg"))
 				p.getInventory().addItem(itemWithName(Material.DRAGON_EGG, "§6Black Hole"));
-			if (hasAdvancement(p, "minecraft:end/elytra"))
+			if (hasAdvancement(p, "end/elytra"))
 				p.getInventory().addItem(itemWithName(Material.PHANTOM_MEMBRANE, "§6Phantom Burst"));
 		} else if (u.equals(eli)) {
 			p.getInventory().addItem(itemWithName(Material.BLAZE_ROD, "§6Electrokinesis"));
-			if (hasAdvancement(p, "minecraft:story/obtain_armor"))
+			if (hasAdvancement(p, "story/obtain_armor"))
 				p.getInventory().addItem(itemWithName(Material.BLACK_DYE, "§bUmbrakinesis"));
-			if (hasAdvancement(p, "minecraft:story/enter_the_nether"))
+			if (hasAdvancement(p, "story/enter_the_nether"))
 				p.getInventory().addItem(itemWithName(Material.GLOWSTONE, "§bDawn of Light"));
-			if (hasAdvancement(p, "minecraft:story/shiny_gear"))
+			if (hasAdvancement(p, "story/shiny_gear"))
 				p.getInventory().addItem(itemWithName(Material.DIAMOND, "§bShape Shift"));
-			if (hasAdvancement(p, "minecraft:story/enter_the_end")) {
+			if (endAdvancements.contains(p.getUniqueId())) {
 				ItemStack a = itemWithName(Material.NETHERITE_SWORD, "§bBlades of Exile");
 				ItemMeta ab = a.getItemMeta();
 				ab.addEnchant(Enchantment.DAMAGE_ALL, 4, true);
@@ -1151,7 +1109,7 @@ public class Asteria extends JavaPlugin {
 				a.setItemMeta(ab);
 				p.getInventory().addItem(a);
 			}
-			if (hasAdvancement(p, "minecraft:end/find_end_city")) {
+			if (hasAdvancement(p, "end/find_end_city")) {
 				ItemStack aa = itemWithName(Material.NETHERITE_AXE, "§bLeviathan Axe");
 				ItemMeta aab = aa.getItemMeta();
 				aab.addEnchant(Enchantment.DAMAGE_ALL, 5, true);
@@ -1160,13 +1118,13 @@ public class Asteria extends JavaPlugin {
 			}
 		} else if (u.equals(oz)) {
 			p.getInventory().addItem(itemWithName(Material.GOLD_NUGGET, "§6Magic Seal"));
-			if (hasAdvancement(p, "minecraft:adventure/sniper_duel"))
+			if (hasAdvancement(p, "adventure/sniper_duel"))
 				p.getInventory().addItem(itemWithName(Material.GOLD_INGOT, "§bAlmighty Push"));
-			if (hasAdvancement(p, "minecraft:nether/return_to_sender"))
+			if (hasAdvancement(p, "nether/return_to_sender"))
 				p.getInventory().addItem(itemWithName(Material.GOLD_BLOCK, "§bFull Counter"));
-			if (hasAdvancement(p, "minecraft:story/enchant_item"))
+			if (hasAdvancement(p, "story/enchant_item"))
 				p.getInventory().addItem(itemWithName(Material.OBSIDIAN, "§bCatastrophic Seal"));
-			if (hasAdvancement(p, "minecraft:story/enter_the_end"))
+			if (endAdvancements.contains(p.getUniqueId()))
 				p.getInventory().addItem(itemWithName(Material.YELLOW_STAINED_GLASS_PANE, "§bThe End Gates"));
 		}
 	}
@@ -1248,15 +1206,30 @@ public class Asteria extends JavaPlugin {
 		return 5;
 	}
 
-	void writePower(String s, Long l) {
-		try (FileWriter filewriter = new FileWriter(new File(getDataFolder(), s))) {
-			filewriter.write(String.valueOf(l));
-		} catch (IOException ex) {
-			ex.printStackTrace();
+	static HashSet<UUID> readArray(String s) {
+		if (!dataFolder.exists())
+			dataFolder.mkdir();
+		File f = new File(dataFolder, s);
+		try {
+			if (f.createNewFile())
+				return new HashSet<UUID>();
+			else {
+				Scanner myReader = new Scanner(f);
+				String data = myReader.nextLine();
+				myReader.close();
+				HashSet<UUID> temp = new HashSet<UUID>();
+				for (String ss : data.split(","))
+					temp.add(UUID.fromString(ss));
+				return temp;
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return new HashSet<UUID>();
 	}
 
 	public static boolean hasAdvancement(Player player, String name) {
+		name = "minecraft:" + name;
 		Iterator<Advancement> it = Bukkit.getServer().advancementIterator();
 		while (it.hasNext()) {
 			Advancement a = it.next();

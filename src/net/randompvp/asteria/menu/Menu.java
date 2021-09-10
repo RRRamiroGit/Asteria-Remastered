@@ -24,8 +24,7 @@ public class Menu {
 			Utils.createItem(inv, Material.BEDROCK, 1, 5, "§8§lCan't use this", "You can't use this power currently!");
 		else
 			Utils.createItem(inv, Material.NETHERRACK, 1, 5, "§c§lNether", "Click to warp to the nether");
-		if (p.getWorld().getName().equals("world_the_end") || PowerUtils.isInDimension(p.getWorld().getName()) || p.getWorld().getName().equals("rift")
-				|| !Asteria.hasAdvancement(p, "minecraft:story/enter_the_end"))
+		if (p.getWorld().getName().equals("world_the_end") || PowerUtils.isInDimension(p.getWorld().getName()) || p.getWorld().getName().equals("rift") || !Asteria.endAdvancements.contains(p.getUniqueId()))
 			Utils.createItem(inv, Material.BEDROCK, 1, 8, "§8§lCan't use this", "You can't use this power currently!");
 		else
 			Utils.createItem(inv, Material.END_STONE, 1, 8, "§e§lEnd", "Click to warp to the end");
@@ -58,27 +57,15 @@ public class Menu {
 		Inventory toReturn = Bukkit.createInventory(null, inv_rows, "§lChoose your variation");
 		if (Asteria.whatMobHanySelected.equals("zombie")) {
 			Utils.createItem(inv, Material.ZOMBIE_HEAD, 1, 1, "§bZombie", "Click to select Zombie");
-			Utils.createHead(inv,
-					"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1MTU3YjRhNDhmMmE5NDk5MGJjZGY2Yjk2YTg4OGE3OThhOGNmZmM1YWViOWI1ZDA2YjkwYzZjOGY4MGYwIn19fQ==",
-					2, "§bZombie Villager", "Click to select Zombie Villager");
-			Utils.createHead(inv,
-					"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2NDNmZGRlZGE1M2JkMjM4ZGU2ZjVjYmFhYzY1ZGVmMGJhYjk1MjQyYzY3ZDM0MDEyZDc3NWNlMDFjYTkzIn19fQ==",
-					3, "§bHusk", "Click to select Husk");
-			Utils.createHead(inv,
-					"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzMTFlZWI3ZTVhNDllZjA5MTgwN2JkNGUzMGQzOGEwM2YwMTMwNzE2YzkxMGU1NjZlYWEwMThhOGUyNWQ5MyJ9fX0=",
-					4, "§bDrowned", "Click to select Drowned");
+			Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjc1MTU3YjRhNDhmMmE5NDk5MGJjZGY2Yjk2YTg4OGE3OThhOGNmZmM1YWViOWI1ZDA2YjkwYzZjOGY4MGYwIn19fQ==", 2, "§bZombie Villager", "Click to select Zombie Villager");
+			Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWY2NDNmZGRlZGE1M2JkMjM4ZGU2ZjVjYmFhYzY1ZGVmMGJhYjk1MjQyYzY3ZDM0MDEyZDc3NWNlMDFjYTkzIn19fQ==", 3, "§bHusk", "Click to select Husk");
+			Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzMTFlZWI3ZTVhNDllZjA5MTgwN2JkNGUzMGQzOGEwM2YwMTMwNzE2YzkxMGU1NjZlYWEwMThhOGUyNWQ5MyJ9fX0=", 4, "§bDrowned", "Click to select Drowned");
 		} else if (Asteria.whatMobHanySelected.equals("skeleton")) {
 			Utils.createItem(inv, Material.SKELETON_SKULL, 1, 1, "§bSkeleton", "Click to select Skeleton");
-			Utils.createHead(inv,
-					"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU3YmYwN2IzODg0N2FjMzA5ZDMzZTMyYTZiZjNiZDYwODc0MGNiZDljZjUwMmRjMWQ2NzBjM2VhMjZmOWRmNiJ9fX0=",
-					2, "§bStray", "Click to select Stray");
+			Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjU3YmYwN2IzODg0N2FjMzA5ZDMzZTMyYTZiZjNiZDYwODc0MGNiZDljZjUwMmRjMWQ2NzBjM2VhMjZmOWRmNiJ9fX0=", 2, "§bStray", "Click to select Stray");
 		} else if (Asteria.whatMobHanySelected.equals("piglin")) {
-			Utils.createHead(inv,
-					"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdiYjhkNDM0ZGY1ZDVmNTM2MmY0ZmNkMWFkYmEyYjBhMDY2OGM2YzBhM2UzMWZlMWJlZGIwZmI3Y2YzMmIxNSJ9fX0=",
-					1, "§bZombified Piglin", "Click to select Zombified Piglin");
-			Utils.createHead(inv,
-					"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ2ZGUzM2UzZGJkZjM5YWU2MDBiMmFhZjdiY2Q5ODQ4MzU2YWIzYzIzOTAxMDg1NjIxODk5MzlkMTRmNzcyNSJ9fX0=",
-					2, "§bZoglin", "Click to select Zoglin");
+			Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTdiYjhkNDM0ZGY1ZDVmNTM2MmY0ZmNkMWFkYmEyYjBhMDY2OGM2YzBhM2UzMWZlMWJlZGIwZmI3Y2YzMmIxNSJ9fX0=", 1, "§bZombified Piglin", "Click to select Zombified Piglin");
+			Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTQ2ZGUzM2UzZGJkZjM5YWU2MDBiMmFhZjdiY2Q5ODQ4MzU2YWIzYzIzOTAxMDg1NjIxODk5MzlkMTRmNzcyNSJ9fX0=", 2, "§bZoglin", "Click to select Zoglin");
 		} else if (Asteria.whatMobHanySelected.equals("horse")) {
 			Utils.createItem(inv, Material.ZOMBIE_HORSE_SPAWN_EGG, 1, 1, "§bZombie Horse", "Click to select Zombie Horse");
 			Utils.createItem(inv, Material.SKELETON_HORSE_SPAWN_EGG, 1, 2, "§bSkeleton Horse", "Click to select Skeleton Horse");
@@ -88,8 +75,7 @@ public class Menu {
 		String color = "§a";
 		if (!Asteria.canAllegianceTeleportToHany)
 			color = "§c";
-		Utils.createItem(inv, Material.ENDER_PEARL, 1, 8, "§bToggle Teleporting", "Click to toggle the teleporting of all your allegiances",
-				"Currently set to: " + color + Asteria.canAllegianceTeleportToHany);
+		Utils.createItem(inv, Material.ENDER_PEARL, 1, 8, "§bToggle Teleporting", "Click to toggle the teleporting of all your allegiances", "Currently set to: " + color + Asteria.canAllegianceTeleportToHany);
 		Utils.createItem(inv, Material.RED_STAINED_GLASS_PANE, 1, 9, "§4Desummon", "Click to desummon");
 		toReturn.setContents(inv.getContents());
 		return toReturn;
@@ -100,13 +86,11 @@ public class Menu {
 		Inventory inv = Bukkit.createInventory(null, inv_rows);
 		Inventory toReturn = Bukkit.createInventory(null, inv_rows, "§lCalling Conch");
 
-		Utils.createHead(inv,
-				"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzMTFlZWI3ZTVhNDllZjA5MTgwN2JkNGUzMGQzOGEwM2YwMTMwNzE2YzkxMGU1NjZlYWEwMThhOGUyNWQ5MyJ9fX0=",
-				1, "§bDrowned", "Click here to spawn drowned where you're looking!");
-		Utils.createItem(inv, Material.AXOLOTL_BUCKET, 1, 2, "§bAxolotl", "Click here to spawn axolotl where you're looking!");
-		Utils.createHead(inv,
-				"e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTU2YjM3NzgzODYxZTZhNDRkNTM3ZTMyZDg2NTUzNzMxYWU0MzM3OTExNWRiMzRjMjY2ZTUyZmEzY2FiIn19fQ==",
-				3, "§bGuardian", "Click here to spawn guardians where you're looking!");
+		Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQzMTFlZWI3ZTVhNDllZjA5MTgwN2JkNGUzMGQzOGEwM2YwMTMwNzE2YzkxMGU1NjZlYWEwMThhOGUyNWQ5MyJ9fX0=", 1, "§bDrowned", "Click here to spawn drowned where you're looking!");
+		if (Asteria.hasAdvancement(p, "husbandry/kill_axolotl_target"))
+			Utils.createItem(inv, Material.AXOLOTL_BUCKET, 1, 2, "§bAxolotl", "Click here to spawn axolotl where you're looking!");
+		if (Asteria.hasAdvancement(p, "adventure/very_very_frightening"))
+			Utils.createHead(inv, "e3RleHR1cmVzOntTS0lOOnt1cmw6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTU2YjM3NzgzODYxZTZhNDRkNTM3ZTMyZDg2NTUzNzMxYWU0MzM3OTExNWRiMzRjMjY2ZTUyZmEzY2FiIn19fQ==", 3, "§bGuardian", "Click here to spawn guardians where you're looking!");
 
 		toReturn.setContents(inv.getContents());
 		return toReturn;
@@ -146,8 +130,7 @@ public class Menu {
 		else
 			Utils.createItem(inv, Material.LIGHT_BLUE_CONCRETE, 1, 3, "§bDimensional Room", "Click to go to your Dimensional Room!");
 		if (Asteria.dimensionalRoom.containsKey(p.getUniqueId()) && p.getWorld().getName().equals("12thdimension"))
-			Utils.createItem(inv, Material.MAGENTA_CONCRETE, 1, 7, "§b12th Dimensional Physiology",
-					"Click to warp out of the 12th Dimension!");
+			Utils.createItem(inv, Material.MAGENTA_CONCRETE, 1, 7, "§b12th Dimensional Physiology", "Click to warp out of the 12th Dimension!");
 		else
 			Utils.createItem(inv, Material.MAGENTA_CONCRETE, 1, 7, "§b12th Dimensional Physiology", "Click to go to the 12th Dimension!");
 

@@ -1,7 +1,7 @@
 name: AsteriaSMP
 author: RRRamiro
-version: 1.0
-main: net.randompvp.asteria.Main
+version: 2.0.1
+main: net.randompvp.asteria.Asteria
 api-version: 1.17
 
 commands:

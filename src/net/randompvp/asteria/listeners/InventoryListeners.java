@@ -22,6 +22,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -35,7 +36,7 @@ import net.randompvp.asteria.Asteria;
 import net.randompvp.asteria.utils.PowerUtils;
 import net.randompvp.asteria.utils.Utils;
 
-public class InventoryListeners {
+public class InventoryListeners implements Listener {
 	Random r = new Random();
 
 	Plugin plugin;
@@ -48,9 +49,8 @@ public class InventoryListeners {
 	public void onInventoryClick(InventoryClickEvent e) {
 		Player p = (Player) e.getWhoClicked();
 		ItemStack i = e.getCurrentItem();
-		if ((e.getClick().isShiftClick() && e.getClickedInventory() == p.getInventory() && i != null && i.getItemMeta() != null && Asteria.powerNames.contains(i.getItemMeta().getDisplayName())) || (e.getClick().isKeyboardClick() && e.getClickedInventory() != p.getInventory() && e.getHotbarButton() > -1 && p.getInventory().getItem(e.getHotbarButton()) != null && Asteria.powerNames.contains(p.getInventory().getItem(e.getHotbarButton()).getItemMeta().getDisplayName())) || (e.getClickedInventory() != p.getInventory() && e.getCursor() != null && !e.getCursor().getType().equals(Material.AIR) && Asteria.powerNames.contains(e.getCursor().getItemMeta().getDisplayName()))) {
+		if ((e.getClick().isShiftClick() && e.getClickedInventory() == p.getInventory() && i != null && i.getItemMeta() != null && Asteria.powerNames.contains(i.getItemMeta().getDisplayName())) || (e.getClick().isKeyboardClick() && e.getClickedInventory() != p.getInventory() && e.getHotbarButton() > -1 && p.getInventory().getItem(e.getHotbarButton()) != null && Asteria.powerNames.contains(p.getInventory().getItem(e.getHotbarButton()).getItemMeta().getDisplayName())) || (e.getClickedInventory() != p.getInventory() && e.getCursor() != null && !e.getCursor().getType().equals(Material.AIR) && Asteria.powerNames.contains(e.getCursor().getItemMeta().getDisplayName())))
 			e.setCancelled(true);
-		}
 		if (e.getView().getTitle().equals("§lDimension Jump")) {
 			e.setCancelled(true);
 			if (i != null && i.getItemMeta() != null && i.getItemMeta().getDisplayName() != null) {
@@ -109,9 +109,9 @@ public class InventoryListeners {
 						x = x / 8;
 						z = z / 8;
 						for (int y = 0; y < 127; y++) {
-							Block b = Bukkit.getWorld("nether").getBlockAt(x, y, z);
+							Block b = Bukkit.getWorld("world_nether").getBlockAt(x, y, z);
 							if (b.getType().isAir()) {
-								b = Bukkit.getWorld("nether").getBlockAt(x, y - 1, z);
+								b = Bukkit.getWorld("world_nether").getBlockAt(x, y - 1, z);
 								Location l = b.getLocation();
 								l.setX(l.getX() + 0.5);
 								l.setZ(l.getZ() + 0.5);
@@ -154,7 +154,7 @@ public class InventoryListeners {
 							z = z * 8;
 						}
 						for (int y = 255; y > 0; y--) {
-							Block b = Bukkit.getWorld("end").getBlockAt(x, y, z);
+							Block b = Bukkit.getWorld("world_the_end").getBlockAt(x, y, z);
 							if (!b.getType().isAir()) {
 								Location l = b.getLocation();
 								l.setX(l.getX() + 0.5);
@@ -172,7 +172,7 @@ public class InventoryListeners {
 								return;
 							}
 						}
-						Block b = Bukkit.getWorld("end").getBlockAt(x, 80, z);
+						Block b = Bukkit.getWorld("world_the_end").getBlockAt(x, 80, z);
 						Location l = b.getLocation();
 						l.setX(l.getX() + 0.5);
 						l.setZ(l.getZ() + 0.5);
@@ -410,10 +410,10 @@ public class InventoryListeners {
 						mob = EntityType.GUARDIAN;
 					}
 					if (mob != null) {
-						if (Asteria.hasAdvancement(p, "minecraft:story/enter_the_end"))
+						if (Asteria.endAdvancements.contains(p.getUniqueId()))
 							amountOfMobs = 5;
-						boolean hasBrew = Asteria.hasAdvancement(p, "minecraft:nether/brew_potion");
-						boolean hasFriend = Asteria.hasAdvancement(p, "minecraft:husbandry/kill_axolotl_target");
+						boolean hasBrew = Asteria.hasAdvancement(p, "nether/brew_potion");
+						boolean hasFriend = Asteria.hasAdvancement(p, "husbandry/kill_axolotl_target");
 						for (int distance = 0; distance < 50; distance++) {
 							Location l = p.getEyeLocation();
 							l.add(l.getDirection().multiply(distance + 1));
@@ -572,7 +572,7 @@ public class InventoryListeners {
 				} else if (i.getItemMeta().getDisplayName().equals("§b12th Dimensional Physiology")) {
 					if (p.getWorld().getName().equals("rift") || p.getWorld().getName().equals("10thdimension") || p.getWorld().getName().equals("dimensional_room") || Asteria.riftLocations.containsKey(p.getUniqueId()) || Asteria.riftLocations.containsKey(p.getUniqueId()))
 						p.sendMessage(ChatColor.RED + "You may not use this power right now!");
-					else if (!Asteria.hasAdvancement(p, "minecraft:end/respawn_dragon"))
+					else if (!Asteria.hasAdvancement(p, "end/respawn_dragon"))
 						p.sendMessage(ChatColor.RED + "You must unlock The End... Again? for this power!");
 					else if (Asteria.dimensionalRoom.containsKey(p.getUniqueId())) {
 						Location to = Asteria.dimensionalRoom.get(p.getUniqueId());

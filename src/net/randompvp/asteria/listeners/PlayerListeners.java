@@ -60,10 +60,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.util.Vector;
 
 import net.md_5.bungee.api.ChatColor;
@@ -173,15 +175,15 @@ public class PlayerListeners implements Listener {
 						Asteria.isTakeDamageDoubleJump = true;
 						double jump = 2D;
 						double damage = 6D;
-						if (Asteria.hasAdvancement(p, "minecraft:story/enter_the_end"))
+						if (Asteria.endAdvancements.contains(p.getUniqueId()))
 							jump = 6D;
-						else if (Asteria.hasAdvancement(p, "minecraft:nether/explore_nether")) {
+						else if (Asteria.hasAdvancement(p, "nether/explore_nether")) {
 							jump = 5D;
-							if (!Asteria.hasAdvancement(p, "minecraft:story/enter_the_end"))
+							if (!Asteria.endAdvancements.contains(p.getUniqueId()))
 								damage = 8D;
-						} else if (Asteria.hasAdvancement(p, "minecraft:story/shiny_gear"))
+						} else if (Asteria.hasAdvancement(p, "story/shiny_gear"))
 							jump = 4D;
-						else if (Asteria.hasAdvancement(p, "minecraft:story/enter_the_nether"))
+						else if (Asteria.hasAdvancement(p, "story/enter_the_nether"))
 							jump = 3D;
 						final double damagee = damage;
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -723,9 +725,9 @@ public class PlayerListeners implements Listener {
 							for (LivingEntity le : l.getWorld().getLivingEntities()) {
 								if (l.getBlock().getType().isSolid() || le.getEyeLocation().distance(l) < 1.3) {
 									int iii = 0;
-									if (Asteria.hasAdvancement(p, "minecraft:story/lava_bucket")) {
+									if (Asteria.hasAdvancement(p, "story/lava_bucket")) {
+										Asteria.starShotCooldownCount++;
 										if (Asteria.starShotCooldownCount > 2) {
-											Asteria.starShotCooldownCount++;
 											Asteria.cooldownStarShot = Instant.now().getEpochSecond() + PowerUtils.handleCooldown(20);
 											Asteria.starShotCooldownCount = 0;
 										}
@@ -752,7 +754,7 @@ public class PlayerListeners implements Listener {
 											}
 											if (ll.getBlock().getType().isSolid() || le.getEyeLocation().distance(ll) < 1.3 || l.getWorld().getMinHeight() + 1 == iiii) {
 												Float power = 1.7F;
-												if (Asteria.hasAdvancement(p, "minecraft:end/elytra"))
+												if (Asteria.hasAdvancement(p, "end/elytra"))
 													power = 2.3F;
 												l.getWorld().createExplosion(ll, power, true, true, p);
 												for (int o : ids)
@@ -777,7 +779,7 @@ public class PlayerListeners implements Listener {
 						for (LivingEntity le : p.getWorld().getLivingEntities()) {
 							if (le.getLocation().distance(p.getLocation()) < 7 && !le.getUniqueId().equals(p.getUniqueId())) {
 								double damage = 10;
-								if (Asteria.hasAdvancement(p, "minecraft:end/elytra"))
+								if (Asteria.hasAdvancement(p, "end/elytra"))
 									damage = 12;
 								le.damage(damage, p);
 								le.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 200, 0));
@@ -806,7 +808,7 @@ public class PlayerListeners implements Listener {
 							for (PotionEffectType pet : effects)
 								positiveEffects.add(pet);
 							int power = 1;
-							if (Asteria.hasAdvancement(p, "minecraft:nether/obtain_blaze_rod")) {
+							if (Asteria.hasAdvancement(p, "nether/obtain_blaze_rod")) {
 								power = 2;
 								int random = r.nextInt(positiveEffects.size());
 								p.addPotionEffect(new PotionEffect(positiveEffects.get(random), 600, power));
@@ -837,12 +839,12 @@ public class PlayerListeners implements Listener {
 							if (!l.getBlock().getType().isAir()) {
 								for (LivingEntity le : l.getWorld().getLivingEntities()) {
 									if (le.getLocation().distance(l) < 9 && !p.getUniqueId().equals(le.getUniqueId())) {
-										if (Asteria.hasAdvancement(p, "minecraft:story/shiny_gear")) {
+										if (Asteria.hasAdvancement(p, "story/shiny_gear")) {
 											le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 0));
 											le.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 100, 0));
 										}
 										double damage = 12;
-										if (Asteria.hasAdvancement(p, "minecraft:end/elytra"))
+										if (Asteria.hasAdvancement(p, "end/elytra"))
 											damage = 14;
 										le.damage(damage, p);
 										le.setVelocity(le.getLocation().getDirection().multiply(0).setY(1.35));
@@ -1023,7 +1025,7 @@ public class PlayerListeners implements Listener {
 							}
 						}
 					}
-				} else if (p.getUniqueId().equals(Asteria.ed) && Asteria.hasAdvancement(p, "minecraft:story/mine_diamond") && (type.name().endsWith("_PICKAXE") || type.name().endsWith("_SWORD") || type.name().endsWith("_SHOVEL") || type.name().endsWith("_HOE") || type.name().endsWith("_AXE"))) {
+				} else if (p.getUniqueId().equals(Asteria.ed) && Asteria.hasAdvancement(p, "story/mine_diamond") && (type.name().endsWith("_PICKAXE") || type.name().endsWith("_SWORD") || type.name().endsWith("_SHOVEL") || type.name().endsWith("_HOE") || type.name().endsWith("_AXE"))) {
 					if (Asteria.isReversalActive) {
 						Asteria.isReversalActive = false;
 						p.sendMessage(ChatColor.RED + "You have deactivated your Revenge Counter!");
@@ -1034,7 +1036,7 @@ public class PlayerListeners implements Listener {
 							p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Magic Seal");
 						else if (Asteria.reversalDamage < 7.5)
 							p.sendMessage(ChatColor.RED + "You can't use Revenge Counter with less than 10% damage!");
-						else if (!Asteria.hasAdvancement(p, "minecraft:story/shiny_gear"))
+						else if (!Asteria.hasAdvancement(p, "story/shiny_gear"))
 							p.sendMessage(ChatColor.RED + "You must unlock Cover me With Diamonds to use this!");
 						else {
 							Asteria.clicksForReversal = 0;
@@ -1111,7 +1113,7 @@ public class PlayerListeners implements Listener {
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Magic Seal");
 					else {
 						boolean isTherePlayer = false;
-						double damage = Asteria.hasAdvancement(p, "minecraft:nether/brew_potion") ? 12 : 10;
+						double damage = Asteria.hasAdvancement(p, "nether/brew_potion") ? 12 : 10;
 						for (Player a : Bukkit.getOnlinePlayers()) {
 							if (a.getWorld().getName().equals(p.getWorld().getName()) && a.getLocation().distance(p.getLocation()) < 10 && !a.getUniqueId().equals(p.getUniqueId())) {
 								a.getWorld().strikeLightning(a.getLocation());
@@ -1142,7 +1144,7 @@ public class PlayerListeners implements Listener {
 					else {
 						HashSet<Integer> ids = new HashSet<Integer>();
 						Location l = p.getEyeLocation();
-						double damage = Asteria.hasAdvancement(p, "minecraft:nether/brew_potion") ? 14 : 12;
+						double damage = Asteria.hasAdvancement(p, "nether/brew_potion") ? 14 : 12;
 						for (int i = 0; i < 600; i++) {
 							final int ii = i;
 							ids.add(Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
@@ -1332,8 +1334,6 @@ public class PlayerListeners implements Listener {
 							l = p.getBedSpawnLocation();
 						if (l.getWorld().getName().equals(p.getEyeLocation().getWorld().getName()) && l.distance(p.getEyeLocation()) < 7)
 							p.sendMessage(ChatColor.RED + "You can't warp that close to your spawnpoint!");
-						else if (PowerUtils.isInDimension(p.getWorld().getName()) || p.getWorld().getName().equals("rift"))
-							p.sendMessage(ChatColor.RED + "You may not use this power right now!");
 						else {
 							Location old = p.getEyeLocation();
 							p.teleport(l);
@@ -1487,8 +1487,8 @@ public class PlayerListeners implements Listener {
 					else {
 						int k = r.nextInt(3) + 8;
 						DustOptions pa = new Particle.DustOptions(Color.fromRGB(3, 186, 252), 1);
-						int max = Asteria.hasAdvancement(p, "minecraft:adventure/voluntary_exile") ? 3 : 1;
-						double damage = Asteria.hasAdvancement(p, "minecraft:husbandry/make_a_sign_glow") ? 8 : 4;
+						int max = Asteria.hasAdvancement(p, "adventure/voluntary_exile") ? 3 : 1;
+						double damage = Asteria.hasAdvancement(p, "husbandry/make_a_sign_glow") ? 8 : 4;
 						for (int v = 0; v < max; v++) {
 							Location l = p.getEyeLocation();
 							if (v == 1)
@@ -1541,7 +1541,7 @@ public class PlayerListeners implements Listener {
 							if (!a.getUniqueId().equals(p.getUniqueId()) && a.getWorld().getName().equals(p.getWorld().getName()) && a.getLocation().distance(p.getLocation()) < 20)
 								a.sendMessage(ChatColor.YELLOW + p.getName() + " has activated §6Hellstorm " + ChatColor.YELLOW + "near you!");
 						}
-						if (Asteria.hasAdvancement(p, "minecraft:adventure/shoot_arrow")) {
+						if (Asteria.hasAdvancement(p, "adventure/shoot_arrow")) {
 							Location blaze = p.getEyeLocation();
 							blaze.setY(blaze.getY() + 1);
 							for (int i = 0; i < 3; i++) {
@@ -1551,7 +1551,7 @@ public class PlayerListeners implements Listener {
 						}
 						long endTime = Instant.now().getEpochSecond() + 30;
 						p.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 1200, 0));
-						double damage = Asteria.hasAdvancement(p, "minecraft:husbandry/make_a_sign_glow") ? 12 : 8;
+						double damage = Asteria.hasAdvancement(p, "husbandry/make_a_sign_glow") ? 12 : 8;
 						Asteria.hellStormId = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
 							if (p.isOnline()) {
 								p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§eTime left for §6Hellstorm§e: " + (endTime - Instant.now().getEpochSecond())));
@@ -1621,7 +1621,7 @@ public class PlayerListeners implements Listener {
 					else if (PowerUtils.shouldDisablePowerBySeal(p.getUniqueId()))
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Magic Seal");
 					else {
-						int max = Asteria.hasAdvancement(p, "minecraft:story/enchant_item") ? 5 : 1;
+						int max = Asteria.hasAdvancement(p, "story/enchant_item") ? 5 : 1;
 						for (int i = 0; i < max; i++) {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
 								Location l = p.getEyeLocation().add(p.getEyeLocation().getDirection());
@@ -1758,7 +1758,7 @@ public class PlayerListeners implements Listener {
 							l.getWorld().spawnParticle(Particle.FLAME, l, 10, 0.1, 0.1, 0.1, 0.1, null, true);
 							for (LivingEntity en : l.getWorld().getLivingEntities()) {
 								if (en.getLocation().distance(l) < 2 && !en.getUniqueId().equals(p.getUniqueId()) && !u.contains(en.getUniqueId())) {
-									if (Asteria.hasAdvancement(p, "minecraft:end/dragon_breath")) {
+									if (Asteria.hasAdvancement(p, "end/dragon_breath")) {
 										en.setFireTicks(880);
 										en.damage(14, p);
 									} else
@@ -2145,7 +2145,7 @@ public class PlayerListeners implements Listener {
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Magic Seal");
 					else {
 						HashSet<UUID> u = new HashSet<UUID>();
-						boolean hasBlazeRod = Asteria.hasAdvancement(p, "minecraft:nether/obtain_blaze_rod");
+						boolean hasBlazeRod = Asteria.hasAdvancement(p, "nether/obtain_blaze_rod");
 						double damage = hasBlazeRod ? 10 : 8;
 						long cooldown = 2;
 						if (Asteria.isBerserkerActive) {
@@ -2332,7 +2332,7 @@ public class PlayerListeners implements Listener {
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Sorcerer's State§c!");
 					else if (PowerUtils.shouldDisablePowerBySeal(p.getUniqueId()))
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Magic Seal");
-					else if (!Asteria.hasAdvancement(p, "minecraft:story/shiny_gear"))
+					else if (!Asteria.hasAdvancement(p, "story/shiny_gear"))
 						p.sendMessage(ChatColor.RED + "You must unlock Cover me With Diamonds!");
 					else {
 						boolean isTherePlayer = false;
@@ -2477,7 +2477,7 @@ public class PlayerListeners implements Listener {
 					Asteria.isOneShotWither = true;
 					p.sendMessage("§2You now shoot a single wither skull!");
 				}
-			} else if (e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("§bStygius")) {
+			} else if (e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("§bStygius") && Asteria.hasAdvancement(p, "nether/summon_wither")) {
 				String powerName = "§bBerserker";
 				if (Asteria.isBerserkerActive) {
 					p.sendMessage(ChatColor.RED + "You have disabled " + powerName + ChatColor.RED + "!");
@@ -2813,6 +2813,8 @@ public class PlayerListeners implements Listener {
 				Bukkit.getScheduler().cancelTask(Asteria.fortuneEndTask);
 				p.sendMessage(ChatColor.AQUA + "Your fortune has run out!");
 				p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 12 : 20);
+				if (Asteria.hanyPowerMultiplier == 0.5)
+					p.setHealth(0);
 				Asteria.hanyPowerMultiplier = 1;
 				Bukkit.getScheduler().cancelTask(Asteria.fortuneTask);
 			}
@@ -2956,8 +2958,12 @@ public class PlayerListeners implements Listener {
 		}
 		if (Asteria.dimensionalRoom.containsKey(p.getUniqueId()))
 			p.teleport(new Location(Bukkit.getWorld("dimensional_room"), 0.5, 81, 0.5));
-		if (!p.hasPlayedBefore() && p.getUniqueId().equals(Asteria.saby))
-			p.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(1);
+		if (!p.hasPlayedBefore()) {
+			p.sendMessage(ChatColor.YELLOW + "Welcome " + p.getName() + " to AsteriaRemastered!\nFinally! it's done! After months we're finally playing this smp, aren't you hyped too!?! Anyway yea, powers n stuff, pretty cool huh, and you'll unlock more than what you have rn later so thats even more cool. Go and get your other powers! But not too quickly because then it'll kill the smp, atleast have fun tho!");
+			p.getWorld().spawnEntity(p.getEyeLocation(), EntityType.FIREWORK);
+			if (p.getUniqueId().equals(Asteria.saby))
+				p.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(1);
+		}
 	}
 
 	@EventHandler
@@ -2966,7 +2972,7 @@ public class PlayerListeners implements Listener {
 			e.setCancelled(true);
 		if (Asteria.invis.containsKey(e.getPlayer().getUniqueId()) && e.getItem().getType().equals(Material.MILK_BUCKET))
 			e.setCancelled(true);
-		if (e.getPlayer().getUniqueId().equals(Asteria.jose) && e.getItem().getType().equals(Material.WATER_CAULDRON) && Asteria.hasAdvancement(e.getPlayer(), "minecraft:nether/brew_potion")) {
+		if (e.getPlayer().getUniqueId().equals(Asteria.jose) && e.getItem().getType().equals(Material.POTION) && ((PotionMeta) e.getItem().getItemMeta()).getBasePotionData().getType().equals(PotionType.WATER) && Asteria.hasAdvancement(e.getPlayer(), "nether/brew_potion")) {
 			PotionEffectType[] effects = { PotionEffectType.ABSORPTION, PotionEffectType.DAMAGE_RESISTANCE, PotionEffectType.DOLPHINS_GRACE, PotionEffectType.FAST_DIGGING, PotionEffectType.FIRE_RESISTANCE, PotionEffectType.HEAL, PotionEffectType.HEALTH_BOOST, PotionEffectType.HERO_OF_THE_VILLAGE, PotionEffectType.INCREASE_DAMAGE, PotionEffectType.JUMP, PotionEffectType.LUCK, PotionEffectType.NIGHT_VISION, PotionEffectType.REGENERATION, PotionEffectType.SATURATION, PotionEffectType.SLOW_FALLING, PotionEffectType.SPEED, PotionEffectType.WATER_BREATHING };
 			ArrayList<PotionEffectType> positiveEffects = new ArrayList<PotionEffectType>();
 			for (PotionEffectType pet : effects)
@@ -3016,7 +3022,26 @@ public class PlayerListeners implements Listener {
 
 	@EventHandler
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent e) {
-		if (e.getPlayer().getUniqueId().equals(Asteria.ed) || Bukkit.getPlayer(Asteria.ed) == null)
+		Player p = e.getPlayer();
+		if (!Asteria.endAdvancements.contains(p.getUniqueId()) && p.getWorld().getName().equals("world_the_end")) {
+			Asteria.endAdvancements.add(p.getUniqueId());
+			UUID u = p.getUniqueId();
+			if (u.equals(Asteria.ed))
+				e.getPlayer().sendMessage("§aYou now have §6End Jump§a!");
+			else if (u.equals(Asteria.ramiro))
+				e.getPlayer().sendMessage("§aCongrats! You now have resistance 1, and §6Rabbit Jump§a has upgraded!");
+			else if (u.equals(Asteria.jonathan)) {
+				p.sendMessage("§aYou now have §6Supernova§a, and you have been given more hearts!");
+				if (!Asteria.hasAdvancement(p, "end/respawn_dragon"))
+					p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
+			} else if (u.equals(Asteria.jose))
+				p.sendMessage("§aCongrats! You now have §6Wrath of the Sea§a, some permanent effects, and four extra hearts!");
+			else if (u.equals(Asteria.eli))
+				p.sendMessage("§aYou now have §6Blades of Exile§a!");
+			else if (u.equals(Asteria.oz))
+				p.sendMessage("§aCongrats! You now take no fall damage, and have §6The End Gates§a!");
+		}
+		if (p.getUniqueId().equals(Asteria.ed) || Bukkit.getPlayer(Asteria.ed) == null)
 			return;
 		Environment from = e.getFrom().getEnvironment();
 		String fromString;
@@ -3029,7 +3054,7 @@ public class PlayerListeners implements Listener {
 		else
 			fromString = "§rUnknown";
 		String toString;
-		Environment to = e.getPlayer().getWorld().getEnvironment();
+		Environment to = p.getWorld().getEnvironment();
 		if (to.equals(Environment.NORMAL))
 			toString = "§aThe Overworld";
 		else if (to.equals(Environment.NETHER))
@@ -3038,7 +3063,7 @@ public class PlayerListeners implements Listener {
 			toString = "§eThe End";
 		else
 			toString = "§rUnknown";
-		Bukkit.getPlayer(Asteria.ed).sendMessage(ChatColor.DARK_GREEN + e.getPlayer().getName() + ChatColor.GREEN + " has switched from " + fromString + ChatColor.GREEN + " to " + toString);
+		Bukkit.getPlayer(Asteria.ed).sendMessage(ChatColor.DARK_GREEN + p.getName() + ChatColor.GREEN + " has switched from " + fromString + ChatColor.GREEN + " to " + toString);
 	}
 
 	@EventHandler
@@ -3062,8 +3087,6 @@ public class PlayerListeners implements Listener {
 				p.sendMessage("§aYou now have strength 1, §6Alert§a, and §6Rabbit Jump§a has upgraded!");
 			else if (name.equals("nether/explore_nether"))
 				p.sendMessage("§aYou now have haste 2, Alert, and §6Rabbit Jump§a has upgraded!");
-			else if (name.equals("story/enter_the_end"))
-				p.sendMessage("Congrats! §aYou now have resistance 1, and §6Rabbit Jump§a has upgraded!");
 		} else if (p.getUniqueId().equals(Asteria.jonathan)) {
 			if (name.equals("story/lava_bucket"))
 				p.sendMessage("§aYou now have §6Distortion§a, and §6Star Shot§a has upgraded!");
@@ -3071,14 +3094,10 @@ public class PlayerListeners implements Listener {
 				p.sendMessage("§aYou now have §6Eruption§a, and §6Distortion§a has upgraded!");
 			else if (name.equals("story/shiny_gear"))
 				p.sendMessage("§aYou now have strength 2, and §6Eruption§a has upgraded!");
-			else if (name.equals("story/enter_the_end")) {
-				p.sendMessage("§aYou now have §6Supernova§a, and you have been given more hearts!");
-				if (!Asteria.hasAdvancement(p, "minecraft:end/respawn_dragon"))
-					p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
-			} else if (name.equals("end/elytra"))
+			else if (name.equals("end/elytra"))
 				p.sendMessage("§aYou now have §6Star Shield§a, and §6Distortion§a, §6Eruption§a, and §6Star Shot§a has upgraded!");
 			else if (name.equals("end/respawn_dragon")) {
-				p.sendMessage("Congrats! §aYou now have §6Wrath of Asteria§a, and you have been given more hearts!");
+				p.sendMessage("§aCongrats! You now have §6Wrath of Asteria§a, and you have been given more hearts!");
 				p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(28);
 			}
 		} else if (p.getUniqueId().equals(Asteria.ed)) {
@@ -3090,14 +3109,12 @@ public class PlayerListeners implements Listener {
 				p.sendMessage("§aYou now have §6Spatial Manipulation§a, and §6Revenge Counter§a!");
 			else if (name.equals("story/shiny_gear"))
 				p.sendMessage("§aYou now have §6Area Counter§a, and §6Dimensional Room§a!");
-			else if (name.equals("story/enter_the_end"))
-				p.sendMessage("§aYou now have §6End Jump§a!");
 			else if (name.equals("end/kill_dragon"))
 				p.sendMessage("§aYou now have §610th Dimensional Physiology§a!");
 			else if (name.equals("end/find_end_city"))
 				p.sendMessage("§aYou now have §611th Energy Convergence§a, and §6Rift§a, §6Eruption§a!");
 			else if (name.equals("end/respawn_dragon"))
-				p.sendMessage("Congrats! §aYou now have §612th Dimensional Physiology§a!");
+				p.sendMessage("§aCongrats! §aYou now have §612th Dimensional Physiology§a!");
 		} else if (p.getUniqueId().equals(Asteria.jose)) {
 			if (name.equals("adventure/kill_a_mob"))
 				p.sendMessage("§aYou now have §6Calling Conch§a!");
@@ -3108,9 +3125,7 @@ public class PlayerListeners implements Listener {
 			else if (name.equals("adventure/very_very_frightening"))
 				p.sendMessage("§aYou now have §6Neptune§a and §6Calling Conch§a has upgraded!");
 			else if (name.equals("nether/brew_potion"))
-				p.sendMessage("Congrats! §aYou now have effects when drinking a water bottle and in water, and §6Neptune§a, §6Raging Storm§a, §6Aqua Blast§a, and §6Calling Conch§a has upgraded!");
-			else if (name.equals("story/enter_the_end"))
-				p.sendMessage("§aYou now have §6Wrath of the Sea§a, some permanent effects, and four extra hearts!");
+				p.sendMessage("§aYou now have effects when drinking a water bottle and in water, and §6Neptune§a, §6Raging Storm§a, §6Aqua Blast§a, and §6Calling Conch§a has upgraded!");
 		} else if (p.getUniqueId().equals(Asteria.eli)) {
 			if (name.equals("story/obtain_armor"))
 				p.sendMessage("§aYou now have §6Umbrakinesis§a!");
@@ -3118,8 +3133,6 @@ public class PlayerListeners implements Listener {
 				p.sendMessage("§aYou now have §6Dawn of Light§a!");
 			else if (name.equals("story/shiny_gear"))
 				p.sendMessage("§aYou now have strength 2 and resistance 2, and §6Shape Shift§a!");
-			else if (name.equals("story/enter_the_end"))
-				p.sendMessage("§aYou now have §6Blades of Exile§a!");
 			else if (name.equals("end/find_end_city"))
 				p.sendMessage("§aCongrats! You now have §6Leviathan Axe§a!");
 		} else if (p.getUniqueId().equals(Asteria.brent)) {
@@ -3142,8 +3155,6 @@ public class PlayerListeners implements Listener {
 				p.sendMessage("§aYou now have haste 1, and §6Full Counter§a!");
 			else if (name.equals("story/enchant_item"))
 				p.sendMessage("§aYou now have night vision, and §6Catastrophic Seal§a!");
-			else if (name.equals("story/enter_the_end"))
-				p.sendMessage("§aCongrats! You now take no fall damage, and have §6The End Gates§a!");
 		} else if (p.getUniqueId().equals(Asteria.saby)) {
 			if (name.equals("story/lava_bucket"))
 				p.sendMessage("§aYou now have §6Hellstorm§a, and §bFire Breath§a!");
@@ -3167,7 +3178,7 @@ public class PlayerListeners implements Listener {
 			else if (name.equals("nether/obtain_blaze_rod"))
 				p.sendMessage("§aYou now have regeneration in the nether §bFortuna Flip§a, and §6Soul's of the Damned§a, §bStygius§a and §bWither Turret§a has upgraded!");
 			else if (name.equals("nether/brew_potion"))
-				p.sendMessage("§aYou now have strength 1, and §6Wither Punch§a, and §6Soul's of the Damned§a has upgraded!");
+				p.sendMessage("§aYou now have strength 1, and §6Wither Punch§a and §6Soul's of the Damned§a has upgraded!");
 			else if (name.equals("nether/summon_wither"))
 				p.sendMessage("§aCongrats! You now have §6Royal Guard§a!");
 		}

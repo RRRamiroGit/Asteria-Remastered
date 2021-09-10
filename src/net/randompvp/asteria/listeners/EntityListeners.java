@@ -101,7 +101,7 @@ public class EntityListeners implements Listener {
 		if (e.getEntityType().equals(EntityType.TRIDENT)) {
 			EntityThrownTrident theTrident = ((CraftTrident) e.getEntity()).getHandle();
 			ItemStack thrownTrident = CraftItemStack.asBukkitCopy(theTrident.aq);
-			if (!e.getEntity().getWorld().isThundering() && thrownTrident.getItemMeta().getDisplayName() != null && thrownTrident.getItemMeta().getDisplayName().equals("§6Neptune") && e.getEntity().getShooter() instanceof Player && Asteria.hasAdvancement((Player) e.getEntity().getShooter(), "minecraft:adventure/very_very_frightening") && (e.getHitBlock() != null && e.getHitBlock().getType().equals(Material.LIGHTNING_ROD)) || e.getHitEntity() != null) {
+			if (!e.getEntity().getWorld().isThundering() && thrownTrident.getItemMeta().getDisplayName() != null && thrownTrident.getItemMeta().getDisplayName().equals("§6Neptune") && e.getEntity().getShooter() instanceof Player && Asteria.hasAdvancement((Player) e.getEntity().getShooter(), "adventure/very_very_frightening") && (e.getHitBlock() != null && e.getHitBlock().getType().equals(Material.LIGHTNING_ROD)) || e.getHitEntity() != null) {
 				e.getEntity().getWorld().strikeLightning(e.getEntity().getLocation());
 			}
 		}
@@ -125,7 +125,7 @@ public class EntityListeners implements Listener {
 			Player p = (Player) e.getEntity();
 			if (Asteria.stopExplosionHany && p.getUniqueId().equals(Asteria.hany) && (e.getCause().equals(DamageCause.ENTITY_EXPLOSION) || e.getCause().equals(DamageCause.BLOCK_EXPLOSION)))
 				e.setDamage(0);
-			if ((Asteria.invis.containsKey(p.getUniqueId()) && p.getUniqueId().equals(Asteria.ed)) || (((p.getUniqueId().equals(Asteria.hany) && Asteria.hasAdvancement(p, "story/enter_the_nether")) || p.getUniqueId().equals(Asteria.ramiro) || p.getUniqueId().equals(Asteria.ed) || (p.getUniqueId().equals(Asteria.oz) && Asteria.hasAdvancement(p, "story/enter_the_end"))) && e.getCause().equals(DamageCause.FALL)) || p.getWorld().getName().equals("dimensional_room") || p.getWorld().getName().equals("12thdimension") || (p.getUniqueId().equals(Asteria.jose) && Asteria.joseInvincible) || (Asteria.riftInSpec && p.getUniqueId().equals(Asteria.ed))) {
+			if ((Asteria.invis.containsKey(p.getUniqueId()) && p.getUniqueId().equals(Asteria.ed)) || (((p.getUniqueId().equals(Asteria.hany) && Asteria.hasAdvancement(p, "story/enter_the_nether")) || p.getUniqueId().equals(Asteria.ramiro) || p.getUniqueId().equals(Asteria.ed) || (p.getUniqueId().equals(Asteria.oz) && Asteria.endAdvancements.contains(p.getUniqueId()))) && e.getCause().equals(DamageCause.FALL)) || p.getWorld().getName().equals("dimensional_room") || p.getWorld().getName().equals("12thdimension") || (p.getUniqueId().equals(Asteria.jose) && Asteria.joseInvincible) || (Asteria.riftInSpec && p.getUniqueId().equals(Asteria.ed))) {
 				e.setDamage(0);
 				e.setCancelled(true);
 				return;
@@ -260,9 +260,7 @@ public class EntityListeners implements Listener {
 							Asteria.dimensionalRoomQueue.remove(entity.getUniqueId());
 							p.sendMessage(ChatColor.RED + entity.getName() + " will no longer be warping with you to the Dimensional Room!");
 						} else {
-							int max = 3;
-							if (Asteria.hasAdvancement(p, "minecraft:story/enter_the_end"))
-								max = 4;
+							int max = Asteria.endAdvancements.contains(p.getUniqueId()) ? 4 : 3;
 							if (Asteria.dimensionalRoomQueue.size() < max) {
 								Asteria.dimensionalRoomQueue.add(entity.getUniqueId());
 								p.sendMessage(ChatColor.GREEN + entity.getName() + " will now warp with you to the Dimensional Room!");
@@ -275,9 +273,7 @@ public class EntityListeners implements Listener {
 							Asteria.dimensionalWarpQueue.remove(entity.getUniqueId());
 							p.sendMessage(ChatColor.RED + entity.getName() + " will no longer be warping with you between dimensions!");
 						} else {
-							int max = 3;
-							if (Asteria.hasAdvancement(p, "minecraft:story/enter_the_end"))
-								max = 4;
+							int max = Asteria.endAdvancements.contains(p.getUniqueId()) ? 4 : 3;
 							if (Asteria.dimensionalWarpQueue.size() < max) {
 								Asteria.dimensionalWarpQueue.add(entity.getUniqueId());
 								p.sendMessage(ChatColor.GREEN + entity.getName() + " will now warp with you between dimensions!");
@@ -460,14 +456,8 @@ public class EntityListeners implements Listener {
 					}
 				}
 			}
-			if (ee.getDamager().getType().isAlive() && e.getEntity() instanceof Player) {
-				Player p = (Player) e.getEntity();
-				LivingEntity entity = (LivingEntity) ee.getDamager();
-				if (p.getUniqueId().equals(Asteria.jonathan)) {
-					if (Asteria.starshieldActive)
-						entity.damage(e.getFinalDamage(), p);
-				}
-			}
+			if (ee.getDamager().getType().isAlive() && e.getEntity() instanceof Player && e.getEntity().getUniqueId().equals(Asteria.jonathan) && Asteria.starshieldActive)
+				((LivingEntity) ee.getDamager()).damage(e.getFinalDamage(), (Player) e.getEntity());
 		}
 		if (e.getEntity() instanceof Player) {
 			Player p = (Player) e.getEntity();
@@ -494,7 +484,7 @@ public class EntityListeners implements Listener {
 				if (Asteria.hasAdvancement(p, "nether/get_wither_skull") && (e.getCause().equals(DamageCause.WITHER) || e.getCause().equals(DamageCause.MAGIC)))
 					e.setDamage(e.getDamage() / 4);
 			}
-			if (p.getUniqueId().equals(Asteria.jonathan) && p.getHealth() - e.getFinalDamage() <= 4 && p.getHealth() > 4 && p.getHealth() - e.getFinalDamage() > 0.1 && !Asteria.overdriveCooldown && Asteria.hasAdvancement(p, "minecraft:story/enter_the_end")) {
+			if (p.getUniqueId().equals(Asteria.jonathan) && p.getHealth() - e.getFinalDamage() <= 4 && p.getHealth() > 4 && p.getHealth() - e.getFinalDamage() > 0.1 && !Asteria.overdriveCooldown && Asteria.endAdvancements.contains(p.getUniqueId())) {
 				Location l = p.getLocation();
 				l.setY(l.getY() + 1.65);
 				p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 0));
@@ -517,7 +507,7 @@ public class EntityListeners implements Listener {
 			if (p.getUniqueId().equals(Asteria.ed)) {
 				if (p.getHealth() >= 2 && p.getHealth() - e.getFinalDamage() < 2 && (e.getCause().equals(DamageCause.ENTITY_EXPLOSION) || e.getCause().equals(DamageCause.BLOCK_EXPLOSION))) {
 					e.setDamage(0);
-					if (Asteria.hasAdvancement(p, "minecraft:story/mine_diamond"))
+					if (Asteria.hasAdvancement(p, "story/mine_diamond"))
 						Asteria.reversalDamage = Asteria.reversalDamage + (p.getHealth() - 2);
 					p.setHealth(2);
 					if (!Asteria.disableRegen) {
@@ -530,7 +520,7 @@ public class EntityListeners implements Listener {
 						}, 100);
 					}
 				} else {
-					if (Asteria.hasAdvancement(p, "minecraft:story/mine_diamond"))
+					if (Asteria.hasAdvancement(p, "story/mine_diamond"))
 						Asteria.reversalDamage = Asteria.reversalDamage + (e.getFinalDamage() * 0.9);
 					e.setDamage(e.getDamage() * 0.8);
 				}
@@ -634,8 +624,8 @@ public class EntityListeners implements Listener {
 				trident.setPickupStatus(PickupStatus.DISALLOWED);
 				ItemStack a = Asteria.itemWithName(Material.TRIDENT, "§6Neptune");
 				ItemMeta ab = a.getItemMeta();
-				ab.addEnchant(Enchantment.IMPALING, Asteria.hasAdvancement(p, "minecraft:nether/brew_potion") ? 5 : Asteria.hasAdvancement(p, "minecraft:adventure/very_very_frightening") ? 4 : Asteria.hasAdvancement(p, "minecraft:husbandry/kill_axolotl_target") ? 3 : Asteria.hasAdvancement(p, "minecraft:story/obtain_armor") ? 2 : 1, true);
-				if (Asteria.hasAdvancement(p, "minecraft:husbandry/kill_axolotl_target"))
+				ab.addEnchant(Enchantment.IMPALING, Asteria.hasAdvancement(p, "nether/brew_potion") ? 5 : Asteria.hasAdvancement(p, "adventure/very_very_frightening") ? 4 : Asteria.hasAdvancement(p, "husbandry/kill_axolotl_target") ? 3 : Asteria.hasAdvancement(p, "story/obtain_armor") ? 2 : 1, true);
+				if (Asteria.hasAdvancement(p, "husbandry/kill_axolotl_target"))
 					ab.addEnchant(Enchantment.CHANNELING, 1, true);
 				a.setItemMeta(ab);
 				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> p.getInventory().addItem(a), 1);
