@@ -2194,10 +2194,7 @@ public class PlayerListeners implements Listener {
 					else {
 						boolean higher = r.nextInt(10) < Asteria.chanceForFortune;
 						long endTime = Instant.now().getEpochSecond() + 45;
-						Asteria.fortuneTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-							if (p.isOnline())
-								p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§eTime left for " + displayName + "§e: " + (endTime - Instant.now().getEpochSecond())));
-						}, 0, 16);
+						Asteria.fortuneTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§eTime left for " + displayName + "§e: " + (endTime - Instant.now().getEpochSecond()))), 0, 16);
 						if (higher) {
 							Asteria.chanceForFortune--;
 							p.sendMessage(ChatColor.GREEN + "You got good fortune! Everything is now multiplied by 2");
@@ -2209,11 +2206,13 @@ public class PlayerListeners implements Listener {
 							Asteria.hanyPowerMultiplier = 0.5;
 							p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 6 : 10);
 						}
-						Asteria.fortuneEndTask = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-							p.sendMessage(ChatColor.AQUA + "Your fortune has run out!");
-							p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 12 : 20);
-							Asteria.hanyPowerMultiplier = 1;
-							Bukkit.getScheduler().cancelTask(Asteria.fortuneTask);
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+							if (Bukkit.getPlayer(p.getUniqueId()) != null) {
+								p.sendMessage(ChatColor.AQUA + "Your fortune has run out!");
+								p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 12 : 20);
+								Asteria.hanyPowerMultiplier = 1;
+								Bukkit.getScheduler().cancelTask(Asteria.fortuneTask);
+							}
 						}, 900);
 					}
 				}
@@ -2809,10 +2808,8 @@ public class PlayerListeners implements Listener {
 				Bukkit.getScheduler().cancelTask(Asteria.berserkerEndId);
 				PowerUtils.endBerserker();
 			}
-			if (Asteria.hanyPowerMultiplier != 1) {
+			if (Asteria.hanyPowerMultiplier != 1)
 				p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-				Asteria.hanyPowerMultiplier = 1;
-			}
 		}
 		if (Asteria.tenthdimensionLocations.containsKey(u))
 			p.setHealth(0);

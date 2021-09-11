@@ -254,7 +254,6 @@ public class Asteria extends JavaPlugin {
 	public static double hanyPowerMultiplier = 1;
 	public static int chanceForFortune = readFortune();
 	public static int fortuneTask = 0;
-	public static int fortuneEndTask = 0;
 	public static HashSet<UUID> endAdvancements = readArray("endAdvancements");
 
 	@Override
