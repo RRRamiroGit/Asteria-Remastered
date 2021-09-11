@@ -66,7 +66,7 @@ public class InventoryListeners implements Listener {
 							x = x * 8;
 							z = z * 8;
 						}
-						for (int y = 255; y > 0; y--) {
+						for (int y = 300; y > -10; y--) {
 							Block b = Bukkit.getWorld("world").getBlockAt(x, y, z);
 							if (!b.getType().isAir()) {
 								Location l = b.getLocation();
@@ -92,8 +92,9 @@ public class InventoryListeners implements Listener {
 						l.setY(l.getY() + 1);
 						p.teleport(l);
 						for (UUID u : Asteria.dimensionalWarpQueue) {
-							if (!Bukkit.getPlayer(u).isDead())
-								Bukkit.getPlayer(u).teleport(l);
+							Player player = Bukkit.getPlayer(u);
+							if (!player.isDead())
+								player.teleport(l);
 						}
 						Asteria.dimensionalWarpQueue.clear();
 						PowerUtils.setBlocksForWarp(b);
@@ -108,7 +109,7 @@ public class InventoryListeners implements Listener {
 					else {
 						x = x / 8;
 						z = z / 8;
-						for (int y = 0; y < 127; y++) {
+						for (int y = 1; y < 125; y++) {
 							Block b = Bukkit.getWorld("world_nether").getBlockAt(x, y, z);
 							if (b.getType().isAir()) {
 								b = Bukkit.getWorld("world_nether").getBlockAt(x, y - 1, z);
@@ -118,8 +119,9 @@ public class InventoryListeners implements Listener {
 								l.setY(l.getY() + 1);
 								p.teleport(l);
 								for (UUID u : Asteria.dimensionalWarpQueue) {
-									if (!Bukkit.getPlayer(u).isDead())
-										Bukkit.getPlayer(u).teleport(l);
+									Player player = Bukkit.getPlayer(u);
+									if (!player.isDead())
+										player.teleport(l);
 								}
 								Asteria.dimensionalWarpQueue.clear();
 								PowerUtils.setBlocksForWarp(b);
@@ -135,8 +137,9 @@ public class InventoryListeners implements Listener {
 						l.setY(l.getY() + 1);
 						p.teleport(l);
 						for (UUID u : Asteria.dimensionalWarpQueue) {
-							if (!Bukkit.getPlayer(u).isDead())
-								Bukkit.getPlayer(u).teleport(l);
+							Player player = Bukkit.getPlayer(u);
+							if (!player.isDead())
+								player.teleport(l);
 						}
 						Asteria.dimensionalWarpQueue.clear();
 						PowerUtils.setBlocksForWarp(b);
@@ -153,7 +156,7 @@ public class InventoryListeners implements Listener {
 							x = x * 8;
 							z = z * 8;
 						}
-						for (int y = 255; y > 0; y--) {
+						for (int y = 253; y > 0; y--) {
 							Block b = Bukkit.getWorld("world_the_end").getBlockAt(x, y, z);
 							if (!b.getType().isAir()) {
 								Location l = b.getLocation();
