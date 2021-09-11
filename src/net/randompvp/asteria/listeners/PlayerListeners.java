@@ -2450,7 +2450,7 @@ public class PlayerListeners implements Listener {
 					Asteria.mobHanySelected = EntityType.ZOMBIE;
 					p.sendMessage("§2You have changed your mob type to §aZombie");
 				}
-			} else if (e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("§6Royal Guard")) {
+			} else if (e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("§6Royal Guard") || e.getItemDrop().getItemStack().getItemMeta().getDisplayName().equals("§bFortuna Flip")) {
 				Asteria.cancelSpawning = true;
 				if (Asteria.canWitherTeleportToHany) {
 					Asteria.canWitherTeleportToHany = false;
@@ -2810,13 +2810,8 @@ public class PlayerListeners implements Listener {
 				PowerUtils.endBerserker();
 			}
 			if (Asteria.hanyPowerMultiplier != 1) {
-				Bukkit.getScheduler().cancelTask(Asteria.fortuneEndTask);
-				p.sendMessage(ChatColor.AQUA + "Your fortune has run out!");
-				p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 12 : 20);
-				if (Asteria.hanyPowerMultiplier == 0.5)
-					p.setHealth(0);
+				p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
 				Asteria.hanyPowerMultiplier = 1;
-				Bukkit.getScheduler().cancelTask(Asteria.fortuneTask);
 			}
 		}
 		if (Asteria.tenthdimensionLocations.containsKey(u))
@@ -2964,6 +2959,8 @@ public class PlayerListeners implements Listener {
 			if (p.getUniqueId().equals(Asteria.saby))
 				p.getAttribute(Attribute.GENERIC_ARMOR).setBaseValue(1);
 		}
+		if (p.getUniqueId().equals(Asteria.hany) && Asteria.hanyPowerMultiplier != 1)
+			p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.hanyPowerMultiplier == 2 ? 40 : 10);
 	}
 
 	@EventHandler
