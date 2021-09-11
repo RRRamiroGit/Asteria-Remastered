@@ -298,7 +298,7 @@ public class Asteria extends JavaPlugin {
 				blitt.getKey().getBlock().setBlockData(blitt.getValue());
 		}
 		writeToFileNew(new File(getDataFolder(), "reversalDamage"), reversalDamage.toString());
-		writeToFileNew(new File(getDataFolder(), "fortuneChance"), String.valueOf(cooldownRagnarok));
+		writeToFileNew(new File(getDataFolder(), "fortuneChance"), String.valueOf(chanceForFortune));
 		writeToFileNew(new File(getDataFolder(), "ragnarok"), String.valueOf(cooldownRagnarok));
 		String endAdvancementsString = ",";
 		for (UUID u : endAdvancements)
