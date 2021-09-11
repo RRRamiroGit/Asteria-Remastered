@@ -2207,12 +2207,13 @@ public class PlayerListeners implements Listener {
 							p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 6 : 10);
 						}
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-							if (Bukkit.getPlayer(p.getUniqueId()) != null) {
-								p.sendMessage(ChatColor.AQUA + "Your fortune has run out!");
-								p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 12 : 20);
-								Asteria.hanyPowerMultiplier = 1;
-								Bukkit.getScheduler().cancelTask(Asteria.fortuneTask);
+							Player player = Bukkit.getPlayer(p.getUniqueId());
+							if (player != null) {
+								player.sendMessage(ChatColor.AQUA + "Your fortune has run out!");
+								player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Asteria.isBerserkerActive ? 12 : 20);
 							}
+							Asteria.hanyPowerMultiplier = 1;
+							Bukkit.getScheduler().cancelTask(Asteria.fortuneTask);
 						}, 900);
 					}
 				}
