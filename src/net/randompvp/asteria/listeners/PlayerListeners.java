@@ -49,6 +49,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -77,7 +78,7 @@ import net.randompvp.asteria.utils.PowerUtils;
 
 public class PlayerListeners implements Listener {
 	Random r = new Random();
-	String[] allowedcmds = { "/w", "/msg", "/tell", "/help", "/r", "/shrug" };
+	String[] allowedcmds = { "/w", "/msg", "/tell", "/help", "/r", "/shrug", "/claimexplosions", "/abandonallclaims", "/abandonclaim", "/trust", "/claimlist", "/extendclaim", "/untrust", "/trustlist" };
 	String[] messagecmds = { "/w", "/msg", "/tell" };
 
 	Plugin plugin;
@@ -2402,7 +2403,7 @@ public class PlayerListeners implements Listener {
 	}
 
 	@EventHandler
-	public void onCommand(PlayerCommandPreprocessEvent e) {
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent e) {
 		String[] args = e.getMessage().split(" ");
 		if (!Arrays.stream(allowedcmds).anyMatch(args[0]::equalsIgnoreCase) && !e.getPlayer().isOp()) {
 			e.setCancelled(true);
@@ -2419,6 +2420,15 @@ public class PlayerListeners implements Listener {
 					Asteria.reply.put(Bukkit.getPlayer(args[1]).getName(), e.getPlayer().getName());
 				}
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerCommandSend(PlayerCommandSendEvent e) {
+		if (!e.getPlayer().isOp()) {
+			e.getCommands().clear();
+			for (String s : allowedcmds)
+				e.getCommands().add(s.substring(1));
 		}
 	}
 

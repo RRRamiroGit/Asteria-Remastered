@@ -55,7 +55,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.world.entity.projectile.EntityThrownTrident;
 import net.randompvp.asteria.Asteria;
 import net.randompvp.asteria.powers.HostileConvergencePlayer;
 import net.randompvp.asteria.utils.PowerUtils;
@@ -99,11 +98,9 @@ public class EntityListeners implements Listener {
 			e.getEntity().getWorld().createExplosion(e.getEntity().getLocation(), (float) (explosion * Asteria.hanyPowerMultiplier), false, true, e.getEntity());
 		}
 		if (e.getEntityType().equals(EntityType.TRIDENT)) {
-			EntityThrownTrident theTrident = ((CraftTrident) e.getEntity()).getHandle();
-			ItemStack thrownTrident = CraftItemStack.asBukkitCopy(theTrident.aq);
-			if (!e.getEntity().getWorld().isThundering() && thrownTrident.getItemMeta().getDisplayName() != null && thrownTrident.getItemMeta().getDisplayName().equals("§6Neptune") && e.getEntity().getShooter() instanceof Player && Asteria.hasAdvancement((Player) e.getEntity().getShooter(), "adventure/very_very_frightening") && (e.getHitBlock() != null && e.getHitBlock().getType().equals(Material.LIGHTNING_ROD)) || e.getHitEntity() != null) {
+			ItemStack thrownTrident = CraftItemStack.asBukkitCopy(((CraftTrident) e.getEntity()).getHandle().aq);
+			if (!e.getEntity().getWorld().isThundering() && thrownTrident.getItemMeta().getDisplayName() != null && thrownTrident.getItemMeta().getDisplayName().equals("§6Neptune") && e.getEntity().getShooter() instanceof Player && Asteria.hasAdvancement((Player) e.getEntity().getShooter(), "adventure/very_very_frightening") && ((e.getHitBlock() != null && e.getHitBlock().getType().equals(Material.LIGHTNING_ROD)) || e.getHitEntity() != null))
 				e.getEntity().getWorld().strikeLightning(e.getEntity().getLocation());
-			}
 		}
 	}
 
