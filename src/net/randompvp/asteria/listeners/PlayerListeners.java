@@ -307,6 +307,8 @@ public class PlayerListeners implements Listener {
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Sorcerer's State§c!");
 					else if (PowerUtils.shouldDisablePowerBySeal(p.getUniqueId()))
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Magic Seal");
+					else if (PowerUtils.hanyWitherCount() > 150)
+						p.sendMessage(ChatColor.RED + "You have too many mobs spawned!");
 					else {
 						boolean hasFire = Asteria.hasAdvancement(p, "nether/obtain_blaze_rod");
 						boolean hasBrewery = Asteria.hasAdvancement(p, "nether/brew_potion");
@@ -500,6 +502,8 @@ public class PlayerListeners implements Listener {
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Sorcerer's State§c!");
 					else if (PowerUtils.shouldDisablePowerBySeal(p.getUniqueId()))
 						p.sendMessage(ChatColor.RED + "You may not use this power right now due to §6Magic Seal");
+					else if (PowerUtils.hanyWitherCount() > 150)
+						p.sendMessage(ChatColor.RED + "You have too many mobs spawned!");
 					else {
 						boolean usedQueue = false;
 						for (int i = 0; i < 50; i++) {

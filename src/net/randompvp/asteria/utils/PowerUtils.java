@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -29,116 +30,17 @@ import net.randompvp.asteria.powers.HostileConvergencePlayer;
 public class PowerUtils {
 
 	public static void setBlocksForWarp(Block b) {
-		Block[] toStone = { b, b.getRelative(BlockFace.NORTH), b.getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.WEST), b.getRelative(BlockFace.NORTH_EAST), b.getRelative(BlockFace.NORTH_WEST),
-				b.getRelative(BlockFace.SOUTH_EAST), b.getRelative(BlockFace.SOUTH_WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH)
-						.getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH)
-						.getRelative(BlockFace.NORTH).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH)
-						.getRelative(BlockFace.NORTH).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH)
-						.getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH)
-						.getRelative(BlockFace.SOUTH).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH)
-						.getRelative(BlockFace.SOUTH).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST)
-						.getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST)
-						.getRelative(BlockFace.EAST).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST)
-						.getRelative(BlockFace.EAST).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST)
-						.getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST)
-						.getRelative(BlockFace.WEST).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST)
-						.getRelative(BlockFace.WEST).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH)
-						.getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH)
-						.getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH)
-						.getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH)
-						.getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST)
-						.getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST)
-						.getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST)
-						.getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST)
-						.getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.NORTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.NORTH_WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.SOUTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP)
-						.getRelative(BlockFace.SOUTH_WEST) };
-		Block[] toAir = { b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_WEST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_EAST),
-				b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_WEST) };
+		Block[] toStone = { b, b.getRelative(BlockFace.NORTH), b.getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.EAST), b.getRelative(BlockFace.WEST), b.getRelative(BlockFace.NORTH_EAST), b.getRelative(BlockFace.NORTH_WEST), b.getRelative(BlockFace.SOUTH_EAST), b.getRelative(BlockFace.SOUTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH).getRelative(BlockFace.NORTH).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH).getRelative(BlockFace.SOUTH).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST).getRelative(BlockFace.EAST).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST).getRelative(BlockFace.WEST).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_WEST) };
+		Block[] toAir = { b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.NORTH_WEST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_EAST), b.getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.UP).getRelative(BlockFace.SOUTH_WEST) };
 		HashMap<Location, BlockData> temp = new HashMap<Location, BlockData>();
 		for (Block bb : toStone) {
-			if (!bb.getType().equals(Material.STONE) && !bb.getType().equals(Material.BEDROCK)
-					&& !bb.getType().equals(Material.END_PORTAL_FRAME)) {
+			if (!bb.getType().equals(Material.STONE) && !bb.getType().equals(Material.BEDROCK) && !bb.getType().equals(Material.END_PORTAL_FRAME)) {
 				temp.put(bb.getLocation(), bb.getBlockData());
 				bb.setType(Material.STONE);
 			}
 		}
 		for (Block bb : toAir) {
-			if (!bb.getType().equals(Material.AIR) && !bb.getType().equals(Material.BEDROCK)
-					&& !bb.getType().equals(Material.END_PORTAL_FRAME)) {
+			if (!bb.getType().equals(Material.AIR) && !bb.getType().equals(Material.BEDROCK) && !bb.getType().equals(Material.END_PORTAL_FRAME)) {
 				temp.put(bb.getLocation(), bb.getBlockData());
 				bb.setType(Material.AIR);
 			}
@@ -150,7 +52,7 @@ public class PowerUtils {
 			Asteria.warpBlocks.remove(temp);
 		}, 600);
 	}
-	
+
 	public static boolean isUnderSomething(Player p) {
 		for (int i = p.getWorld().getMaxHeight(); i > p.getEyeLocation().getBlockY(); i--) {
 			if (p.getWorld().getBlockAt(p.getLocation().getBlockX(), i, p.getLocation().getBlockZ()).getType().isSolid())
@@ -161,8 +63,7 @@ public class PowerUtils {
 
 	public static void scheduleCooldown(HashMap<String, String> s) {
 		for (HashMap.Entry<String, String> cd : s.entrySet()) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), () -> s.remove(cd.getKey()),
-					(Long.parseLong(cd.getValue()) - Instant.now().getEpochSecond()) * 20);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Asteria.getPlugin(Asteria.class), () -> s.remove(cd.getKey()), (Long.parseLong(cd.getValue()) - Instant.now().getEpochSecond()) * 20);
 		}
 	}
 
@@ -176,13 +77,11 @@ public class PowerUtils {
 	}
 
 	public static boolean isOnCooldown(HashMap<String, String> cd, Player p) {
-		return cd.containsKey(p.getUniqueId().toString())
-				&& Long.parseLong(cd.get(p.getUniqueId().toString())) - Instant.now().getEpochSecond() > 0;
+		return cd.containsKey(p.getUniqueId().toString()) && Long.parseLong(cd.get(p.getUniqueId().toString())) - Instant.now().getEpochSecond() > 0;
 	}
 
 	public static void sendCDMsg(HashMap<String, String> cd, Player p) {
-		p.sendMessage("§cYou are on cooldown for "
-				+ Asteria.formatTime(Long.parseLong(cd.get(p.getUniqueId().toString())) - Instant.now().getEpochSecond()) + " more!");
+		p.sendMessage("§cYou are on cooldown for " + Asteria.formatTime(Long.parseLong(cd.get(p.getUniqueId().toString())) - Instant.now().getEpochSecond()) + " more!");
 	}
 
 	public static boolean isOnCooldownNew(Long cd, Player p) {
@@ -196,7 +95,7 @@ public class PowerUtils {
 	public static boolean isInDimension(String name) {
 		return name.equals("10thdimension") || name.equals("dimensional_room") || name.equals("12thdimension");
 	}
-	
+
 	public static boolean shouldDisablePowerBySorcerer(Location l) {
 		if (!Asteria.isSorcererActive)
 			return false;
@@ -250,15 +149,12 @@ public class PowerUtils {
 				}
 				boolean foundItem = false;
 				for (ItemStack iss : p.getInventory().getContents()) {
-					if (iss != null && iss.getItemMeta().getDisplayName() != null
-							&& iss.getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
+					if (iss != null && iss.getItemMeta().getDisplayName() != null && iss.getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
 						pl.getInventory().remove(iss);
 						foundItem = true;
 					}
 				}
-				if (!foundItem && pl.getItemOnCursor() != null && pl.getItemOnCursor().getItemMeta() != null
-						&& pl.getItemOnCursor().getItemMeta().getDisplayName() != null
-						&& pl.getItemOnCursor().getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
+				if (!foundItem && pl.getItemOnCursor() != null && pl.getItemOnCursor().getItemMeta() != null && pl.getItemOnCursor().getItemMeta().getDisplayName() != null && pl.getItemOnCursor().getItemMeta().getDisplayName().equals("§6Bane of Darkness")) {
 					pl.getInventory().remove(pl.getItemOnCursor());
 					foundItem = true;
 				}
@@ -325,8 +221,7 @@ public class PowerUtils {
 	}
 
 	public static boolean shouldDisablePowerBySeal(UUID u) {
-		if ((Asteria.playerOnMagicSeal != null && Asteria.playerOnMagicSeal.equals(u))
-				|| (Asteria.catastrophicSealPlayer != null && Asteria.catastrophicSealPlayer.equals(u)))
+		if ((Asteria.playerOnMagicSeal != null && Asteria.playerOnMagicSeal.equals(u)) || (Asteria.catastrophicSealPlayer != null && Asteria.catastrophicSealPlayer.equals(u)))
 			return true;
 		return false;
 	}
@@ -344,15 +239,14 @@ public class PowerUtils {
 			int length = Asteria.hasAdvancement(hany, "nether/brew_potion") ? 200 : 100;
 			if (Asteria.isBerserkerActive)
 				length = (int) (length * 2.5);
-			target.addPotionEffect(
-					new PotionEffect(PotionEffectType.WITHER, (int) (length * Asteria.hanyPowerMultiplier), (int) (3 * Asteria.hanyPowerMultiplier)));
+			target.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (length * Asteria.hanyPowerMultiplier), (int) (3 * Asteria.hanyPowerMultiplier)));
 		}
 		if (hany.getHealth() + finalDamage + 1 > hany.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue())
 			hany.setHealth(hany.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue());
 		else
 			hany.setHealth(hany.getHealth() + finalDamage + 1);
 	}
-	
+
 	public static void endRift() {
 		Player pl = Bukkit.getPlayer(Asteria.ed);
 		Asteria.riftId = 0;
@@ -386,7 +280,7 @@ public class PowerUtils {
 		} else
 			Bukkit.getLogger().warning("Rift was unable to unlod, will try to unload next time Ed uses his power");
 	}
-	
+
 	public static String getCDirection(float f) {
 		if (f > 0) {
 			if (f >= 135 && f <= 225)
@@ -407,6 +301,17 @@ public class PowerUtils {
 			else
 				return "E";
 		}
+	}
+	
+	public static int hanyWitherCount() {
+		int i = 0;
+		for (World wo : Bukkit.getWorlds()) {
+			for (LivingEntity le : wo.getLivingEntities()) {
+				if (le.getCustomName() != null && (le.getCustomName().equals("§6Withered Knights") || le.getCustomName().equals("§6§lRoyal Guard")))
+					i++;
+			}
+		}
+		return i;
 	}
 
 }
