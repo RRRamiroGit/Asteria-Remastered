@@ -11,14 +11,15 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.Particle.DustOptions;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftTrident;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.AbstractArrow.PickupStatus;
 import org.bukkit.entity.AbstractHorse;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -30,21 +31,22 @@ import org.bukkit.entity.Trident;
 import org.bukkit.entity.Wither;
 import org.bukkit.entity.WitherSkeleton;
 import org.bukkit.entity.WitherSkull;
-import org.bukkit.entity.AbstractArrow.PickupStatus;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityTransformEvent.TransformReason;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTransformEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -663,6 +665,12 @@ public class EntityListeners implements Listener {
 			if ((inv.getItemInMainHand().hasItemMeta() && inv.getItemInMainHand().getItemMeta().getDisplayName() != null && Asteria.powerNames.contains(inv.getItemInMainHand().getItemMeta().getDisplayName())) || (inv.getItemInOffHand().hasItemMeta() && inv.getItemInOffHand().getItemMeta().getDisplayName() != null && Asteria.powerNames.contains(inv.getItemInOffHand().getItemMeta().getDisplayName())))
 				e.setCancelled(true);
 		}
+	}
+
+	@EventHandler
+	public void onEntityTransform(EntityTransformEvent e) {
+		if (e.getTransformReason().equals(TransformReason.CURED) && e.getEntity().getCustomName() != null && e.getEntity().getCustomName().equals("§6Withered Allegiance"))
+			e.getEntity().setCustomName(null);
 	}
 
 }
