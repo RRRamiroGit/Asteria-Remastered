@@ -670,7 +670,7 @@ public class EntityListeners implements Listener {
 	@EventHandler
 	public void onEntityTransform(EntityTransformEvent e) {
 		if (e.getTransformReason().equals(TransformReason.CURED) && e.getEntity().getCustomName() != null && e.getEntity().getCustomName().equals("§6Withered Allegiance"))
-			e.getEntity().setCustomName(null);
+			e.getTransformedEntity().setCustomName(null);
 	}
 
 }
